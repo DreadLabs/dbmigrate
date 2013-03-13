@@ -173,10 +173,13 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$items = array();
 
 		foreach ($this->allowedTables as $table => $icon) {
+			$titleReference = $GLOBALS['TCA'][$table]['ctrl']['title'];
+			$title = $GLOBALS['LANG']->sL($titleReference, TRUE);
+
 			$items[] = array(
 				'href' => 'ajax.php?ajaxID=tx_dbmigrate::toggle_table&table=' . $table,
 				'icon' => t3lib_iconWorks::getSpriteIcon($icon),
-				'title' => $table,
+				'title' => $title ? $title : $table,
 				'visible-if' => 'tx_dbmigrate::is_table_active&table=' . $table .'&icon=' . $icon,
 			);
 		}
