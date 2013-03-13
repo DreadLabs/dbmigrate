@@ -38,13 +38,6 @@ var DbmigrateMenu = Class.create({
 			var
 				self = this;
 
-			Event.observe(
-				window, 'resize',
-				function () {
-					TYPO3BackendToolbarManager.positionMenu('tx-dbmigrate-menu');
-				}
-			);
-			TYPO3BackendToolbarManager.positionMenu('tx-dbmigrate-menu');
 			this.toolbarItemIcon = $$('#tx-dbmigrate-menu .toolbar-item span')[0].src;
 
 			this.checkVisibility();
