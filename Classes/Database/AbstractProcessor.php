@@ -5,38 +5,24 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 
 	/**
 	 *
-	 * @var t3lib_beUserAuth
+	 * @var Tx_Dbmigrate_Backend_User
 	 */
 	protected $backendUser = NULL;
 
 	protected function init() {
 		if (FALSE === $this->isInitialized) {
-			$this->backendUser = $GLOBALS['BE_USER'];
+			$this->backendUser = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
 
 			$this->isInitialized = TRUE;
 		}
 	}
 
 	protected function isQueryLoggingEnabled() {
-		$state = $this->getBackendUserConfig('dbmigrate:logging:enabled', FALSE);
-
-		return $state;
-	}
-
-	protected function getBackendUserConfig($key, $default) {
-		$userConfig = $this->backendUser->uc;
-
-		if (TRUE === isset($userConfig[$key])) {
-			$configurationValue = $userConfig[$key];
-		} else {
-			$configurationValue = $default;
-		}
-
-		return $configurationValue;
+		return $this->backendUser->isLoggingEnabled();
 	}
 
 	protected function logQueryForTable($prefix, $table, $query) {
-		$observedTables = $this->getBackendUserConfig('dbmigrate:logging:tables', array());
+		$observedTables = $this->backendUser->getUserConfiguration('dbmigrate:logging:tables', array());
 
 		if (TRUE === array_key_exists($table, $observedTables)) {
 			$migrationName = $prefix . t3lib_div::underscoredToUpperCamelCase($table);
@@ -50,9 +36,7 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 	}
 
 	protected function getMigrationFileName($migrationName) {
-// 		$realName = $GLOBALS['BE_USER']->user['realName'];
-// 		$username = $GLOBALS['BE_USER']->user['username'];
-		$username = $this->backendUser->user['username'];
+		$username = $this->backendUser->getUserName();
 
 		$version = 0;
 
