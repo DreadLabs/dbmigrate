@@ -127,17 +127,17 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$actions = array();
 
 		$actions[] = array(
-			'href' => 'ajax.php?ajaxID=tx_dbmigrate::enable',
+			'href' => 'ajax.php?ajaxID=tx_dbmigrate::enable_logging',
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-hide'),
 			'title' => 'enable logging',
-			'visible-if' => 'tx_dbmigrate::is_disabled',
+			'visible-if' => 'tx_dbmigrate::is_logging_disabled',
 		);
 
 		$actions[] = array(
-			'href' => 'ajax.php?ajaxID=tx_dbmigrate::disable',
+			'href' => 'ajax.php?ajaxID=tx_dbmigrate::disable_logging',
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-unhide'),
 			'title' => 'disable logging',
-			'visible-if' => 'tx_dbmigrate::is_enabled',
+			'visible-if' => 'tx_dbmigrate::is_logging_enabled',
 		);
 
 		return $actions;

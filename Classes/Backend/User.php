@@ -1,10 +1,11 @@
 <?php
 class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
-	public function enable() {
+
+	public function enableLogging($ajaxParams, TYPO3AJAX $ajaxObject) {
 		$this->setUserConfiguraton('dbmigrate:logging:enabled', TRUE);
 	}
 
-	public function disable() {
+	public function disableLogging($ajaxParams, TYPO3AJAX $ajaxObject) {
 		$this->setUserConfiguraton('dbmigrate:logging:enabled', FALSE);
 	}
 

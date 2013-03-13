@@ -1,24 +1,15 @@
 <?php
 if (!defined ('TYPO3_MODE')) die ('Access denied.');
 
-// this hook flags the _correct_ entry point of TCE main
-// processDatamap_beforeStart
+if (TYPO3_MODE == 'BE') {
+	Tx_Dbmigrate_Utility_ExtensionManagement::addAjaxControllers();
 
-// this hook flags the entry point of TCE main, right before the actual transaction starts...
-// processDatamap_postProcessFieldArray
+	Tx_Dbmigrate_Utility_ExtensionManagement::addToolbarItem($_EXTKEY);
 
-// this hook flags the exit point of TCE main, right after the actual transaction ends...
-// processDatamap_afterDatabaseOperations
+	$preProcessor = 'EXT:dbmigrate/Classes/Database/QueryPreProcessor.php:Tx_Dbmigrate_Database_QueryPreProcessor';
+	$postProcessor = 'EXT:dbmigrate/Classes/Database/QueryPostProcessor.php:Tx_Dbmigrate_Database_QueryPostProcessor';
 
-// this hook flags the _correct_ exit point of TCE main
-// processDatamap_afterAllOperations
-
-//$tceMainProcessor = 'EXT:dbmigrate/Classes/Database/Database/TCEMainProcessor.php:Tx_Dbmigrate_Database_TCEMainProcessor'
-//$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = $tceMainProcessor;
-
-$preProcessor = 'EXT:dbmigrate/Classes/Database/QueryPreProcessor.php:Tx_Dbmigrate_Database_QueryPreProcessor';
-$postProcessor = 'EXT:dbmigrate/Classes/Database/QueryPostProcessor.php:Tx_Dbmigrate_Database_QueryPostProcessor';
-
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = $preProcessor;
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = $postProcessor;
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = $preProcessor;
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = $postProcessor;
+}
 ?>
