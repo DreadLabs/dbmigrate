@@ -55,6 +55,8 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 
 		if (TRUE === isset($currentTables[$tableName])) {
 			$newIcon = t3lib_iconWorks::getSpriteIcon($icon, array(), array('status-overlay-hidden' => array()));
+		} else {
+			$newIcon = t3lib_iconWorks::getSpriteIcon($icon);
 		}
 
 		$result = array(
