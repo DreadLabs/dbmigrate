@@ -22,6 +22,47 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 		$this->setUserConfiguraton('dbmigrate:logging:tables', $currentTables);
 	}
 
+	public function isLoggingEnabled($ajaxParams, TYPO3AJAX $ajaxObject) {
+		$ajaxObject->setContentFormat('json');
+
+		$result = array(
+			'status' => TRUE === $this->getUserConfiguration('dbmigrate:logging:enabled', FALSE)
+		);
+
+		$ajaxObject->setContent($result);
+	}
+
+	public function isLoggingDisabled($ajaxParams, TYPO3AJAX $ajaxObject) {
+		$ajaxObject->setContentFormat('json');
+
+		$result = array(
+			'status' => FALSE === $this->getUserConfiguration('dbmigrate:logging:enabled', FALSE)
+		);
+
+		$ajaxObject->setContent($result);
+	}
+
+	public function isTableActive($ajaxParams, TYPO3AJAX $ajaxObject) {
+		$ajaxObject->setContentFormat('json');
+
+		$newIcon = '';
+
+		$tableName = t3lib_div::_GP('table');
+		$icon = t3lib_div::_GP('icon');
+
+		$currentTables = $this->getUserConfiguration('dbmigrate:logging:tables', array());
+
+		if (TRUE === isset($currentTables[$tableName])) {
+			$newIcon = t3lib_iconWorks::getSpriteIcon($icon, array(), array('status-overlay-hidden' => array()));
+		}
+
+		$result = array(
+			'icon' => $newIcon
+		);
+
+		$ajaxObject->setContent($result);
+	}
+
 	protected function setUserConfiguraton($key, $value) {
 		$GLOBALS['BE_USER']->uc[$key] = $value;
 

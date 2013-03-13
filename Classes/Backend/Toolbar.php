@@ -130,14 +130,14 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 			'href' => 'ajax.php?ajaxID=tx_dbmigrate::enable',
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-hide'),
 			'title' => 'enable logging',
-			'visible-if' => 'tx_dbmigrate::is_enabled',
+			'visible-if' => 'tx_dbmigrate::is_disabled',
 		);
 
 		$actions[] = array(
 			'href' => 'ajax.php?ajaxID=tx_dbmigrate::disable',
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-unhide'),
 			'title' => 'disable logging',
-			'visible-if' => 'tx_dbmigrate::is_disabled',
+			'visible-if' => 'tx_dbmigrate::is_enabled',
 		);
 
 		return $actions;
@@ -177,7 +177,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 				'href' => 'ajax.php?ajaxID=tx_dbmigrate::toggle_table&table=' . $table,
 				'icon' => t3lib_iconWorks::getSpriteIcon($icon),
 				'title' => $table,
-				'visible-if' => 'tx_dbmigrate::is_table_active&table=' . $table
+				'visible-if' => 'tx_dbmigrate::is_table_active&table=' . $table .'&icon=' . $icon,
 			);
 		}
 

@@ -40,7 +40,7 @@ var DbmigrateMenu = Class.create({
 
 			this.toolbarItemIcon = $$('#tx-dbmigrate-menu .toolbar-item span')[0].src;
 
-			this.checkVisibility();
+			this.checkStatus();
 
 			Event.observe('tx-dbmigrate-menu', 'click', this.toggleMenu);
 
@@ -56,21 +56,57 @@ var DbmigrateMenu = Class.create({
 	},
 
 	/**
-	 * checks the visibility for all the menu items
+	 * checks the status for all the menu items
 	 *
 	 */
-	checkVisibility: function () {
+	checkStatus: function () {
 		var
-			content = 'Yeah! I\'m content!',
-			header = 'Header!',
-			group = 'dbmigrate',
-			position = 0;
+			self = this;
 
-		TYPO3.Backend.DebugConsole.addTab(content, header, group, position);
+		$$('#tx-dbmigrate-menu li').each(function (element) {
+			var
+				visibleIf = $(element).readAttribute('data-visible-if');
+
+			if (null !== visibleIf) {
+				self.fetchStatus.call(self, element);
+			}
+		});
+	},
+
+	fetchStatus: function (menuItem) {
+		var
+			self = this,
+			url = 'ajax.php?ajaxID=' + $(menuItem).readAttribute('data-visible-if');
+
+		new Ajax.Request(url, {
+			'method': 'get',
+			'onComplete': function (result) {
+				var
+					status = result.responseText.evalJSON();
+
+				self.setStatus.call(self, menuItem, status);
+			}.bind(this)
+		})
+	},
+
+	setStatus: function (menuItem, status) {
+		if ('undefined' !== typeof status.status) {
+			if (false === status.status) {
+				$(menuItem).hide();
+			} else {
+				$(menuItem).show();
+			}
+		}
+		if ('undefined' !== typeof status.icon) {
+			if ('' !== status.icon) {
+				$(menuItem).down('.t3-icon').replace(status.icon);
+			}
+		}
 	},
 
 	/**
 	 * toggles the visibility of the menu and places it under the toolbar icon
+	 *
 	 */
 	toggleMenu: function (event) {
 		var
@@ -89,11 +125,7 @@ var DbmigrateMenu = Class.create({
 			Effect.Fade(menu, { duration: 0.1 });
 		}
 
-		if (event 
-			&& (
-				Event.element(event).hasClassName('toolbar-item') 
-				|| Event.element(event).up().hasClassName('toolbar-item')
-			)) {
+		if (event) {
 			Event.stop(event);
 		}
 	},
@@ -125,6 +157,8 @@ var DbmigrateMenu = Class.create({
 				'method': 'get',
 				'onComplete': function (result) {
 					spinner.replace(oldIcon);
+
+					this.checkStatus();
 				}.bind(this)
 			});
 		}

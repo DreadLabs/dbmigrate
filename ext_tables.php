@@ -5,6 +5,9 @@ if (TYPO3_MODE == 'BE') {
 	$GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['tx_dbmigrate::enable'] = 'EXT:dbmigrate/Classes/Backend/User.php:Tx_Dbmigrate_Backend_User->enable';
 	$GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['tx_dbmigrate::disable'] = 'EXT:dbmigrate/Classes/Backend/User.php:Tx_Dbmigrate_Backend_User->disable';
 	$GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['tx_dbmigrate::toggle_table'] = 'EXT:dbmigrate/Classes/Backend/User.php:Tx_Dbmigrate_Backend_User->toggleTable';
+	$GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['tx_dbmigrate::is_enabled'] = 'EXT:dbmigrate/Classes/Backend/User.php:Tx_Dbmigrate_Backend_User->isLoggingEnabled';
+	$GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['tx_dbmigrate::is_disabled'] = 'EXT:dbmigrate/Classes/Backend/User.php:Tx_Dbmigrate_Backend_User->isLoggingDisabled';
+	$GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['tx_dbmigrate::is_table_active'] = 'EXT:dbmigrate/Classes/Backend/User.php:Tx_Dbmigrate_Backend_User->isTableActive';
 
 	$GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'][] = t3lib_extMgm::extPath($_EXTKEY, 'Classes/Backend/Toolbar.php');
 }
