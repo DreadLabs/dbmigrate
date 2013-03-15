@@ -18,5 +18,12 @@ class Tx_Dbmigrate_Utility_ExtensionManagement implements t3lib_Singleton {
 	public static function addToolbarItem($_EXTKEY) {
 		$GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'][] = t3lib_extMgm::extPath($_EXTKEY, 'Classes/Backend/Toolbar.php');
 	}
+
+	public static function addTCEMainEntryPoints($_EXTKEY) {
+		$hookClass = t3lib_extMgm::extPath($_EXTKEY, 'Classes/Database/TceMainTransactionHandler.php:Tx_Dbmigrate_Database_TceMainTransactionHandler');
+
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = $hookClass;
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = $hookClass;
+	}
 }
 ?>

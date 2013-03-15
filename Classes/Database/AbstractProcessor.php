@@ -21,31 +21,38 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 		return $this->backendUser->isLoggingEnabled();
 	}
 
-	protected function logQueryForTable($prefix, $table, $query) {
+	protected function logQueryForTable($table, $query) {
 		$observedTables = $this->backendUser->getUserConfiguration('dbmigrate:logging:tables', array());
 
 		if (TRUE === array_key_exists($table, $observedTables)) {
-			$migrationName = $prefix . t3lib_div::underscoredToUpperCamelCase($table);
-
-			$filePath = $this->getMigrationFileName($migrationName);
-
-			$fh = fopen($filePath, 'w');
-			fwrite($fh, $query);
-			fclose($fh);
+			$this->writeChange($query);
 		}
 	}
 
-	protected function getMigrationFileName($migrationName) {
-		$username = $this->backendUser->getUserName();
+	protected function writeChange($query) {
+		try {
+			$filePath = $this->getChangeFileName();
 
-		$version = 0;
+			$fh = fopen($filePath, 'a');
+			fwrite($fh, $query . ';' . chr(10));
+			fclose($fh);
+		} catch (Exception $e) {
+			// fail silently
+			// @todo: log into sys_log
+		}
+	}
 
-		do {
-			$migrationVersion = sprintf('%04d', $version);
-			$filename = sprintf('%s-%s-%s-%s.sql', date('Ymd'), $migrationName, $migrationVersion, $username);
-			$filePath = t3lib_extMgm::extPath('dbmigrate', 'Resources/Public/Migrations/' . $filename);
-			$version = $version + 1;
-		} while (file_exists($filePath));
+	protected function getChangeFileName() {
+		$date = date('Ymd');
+		$changeId = $this->backendUser->getUserConfiguration('dbmigrate:change:id', NULL);
+		$changeType = $this->backendUser->getUserConfiguration('dbmigrate:change:type', NULL);
+
+		if (TRUE === is_null($changeId) || TRUE === is_null($changeType)) {
+			throw new Exception('There is no change to log in the pipeline!');
+		}
+
+		$fileName = sprintf('%s-%s-%s.sql', $date, $changeId, $changeType);
+		$filePath = t3lib_extMgm::extPath('dbmigrate', 'Resources/Public/Migrations/' . $fileName);
 
 		return $filePath;
 	}

@@ -16,7 +16,7 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable('InsertInto', $table, $lastQuery);
+			$this->logQueryForTable($table, $lastQuery);
 		}
 	}
 
@@ -36,7 +36,7 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable('InsertMultipleRowsInto', $table, $lastQuery);
+			$this->logQueryForTable($table, $lastQuery);
 		}
 	}
 
@@ -56,7 +56,7 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable('Update', $table, $lastQuery);
+			$this->logQueryForTable($table, $lastQuery);
 		}
 	}
 
@@ -74,7 +74,7 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable('Delete', $table, $lastQuery);
+			$this->logQueryForTable($table, $lastQuery);
 		}
 	}
 
@@ -91,7 +91,7 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable('Truncate', $table, $lastQuery);
+			$this->logQueryForTable($table, $lastQuery);
 		}
 	}
 }

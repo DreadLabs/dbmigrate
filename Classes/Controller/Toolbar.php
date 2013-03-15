@@ -7,20 +7,24 @@ class Tx_Dbmigrate_Controller_Toolbar implements t3lib_Singleton {
 	 */
 	protected $user = NULL;
 
-	protected function injectUser() {
-		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+	public function injectUser(Tx_Dbmigrate_Backend_User $user = NULL) {
+		if (TRUE !== is_null($user)) {
+			$this->user = $user;
+		} else {
+			$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		}
 	}
 
 	public function enableLogging($ajaxParams, TYPO3AJAX $ajaxObject) {
 		$this->injectUser();
 
-		$this->user->setUserConfiguraton('dbmigrate:logging:enabled', TRUE);
+		$this->user->setUserConfiguration('dbmigrate:logging:enabled', TRUE);
 	}
 
 	public function disableLogging($ajaxParams, TYPO3AJAX $ajaxObject) {
 		$this->injectUser();
 
-		$this->user->setUserConfiguraton('dbmigrate:logging:enabled', FALSE);
+		$this->user->setUserConfiguration('dbmigrate:logging:enabled', FALSE);
 	}
 
 	public function toggleTable() {
@@ -36,7 +40,7 @@ class Tx_Dbmigrate_Controller_Toolbar implements t3lib_Singleton {
 			unset($currentTables[$tableName]);
 		}
 
-		$this->user->setUserConfiguraton('dbmigrate:logging:tables', $currentTables);
+		$this->user->setUserConfiguration('dbmigrate:logging:tables', $currentTables);
 	}
 
 	public function isLoggingEnabled($ajaxParams, TYPO3AJAX $ajaxObject) {
@@ -86,6 +90,6 @@ class Tx_Dbmigrate_Controller_Toolbar implements t3lib_Singleton {
 		);
 
 		$ajaxObject->setContent($result);
-	}	
+	}
 }
 ?>

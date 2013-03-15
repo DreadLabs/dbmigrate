@@ -9,7 +9,7 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 		return FALSE === $this->getUserConfiguration('dbmigrate:logging:enabled', FALSE);
 	}
 
-	public function setUserConfiguraton($key, $value) {
+	public function setUserConfiguration($key, $value) {
 		$GLOBALS['BE_USER']->uc[$key] = $value;
 
 		$GLOBALS['BE_USER']->overrideUC();
