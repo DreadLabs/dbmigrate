@@ -1,6 +1,8 @@
 <?php
 if (!defined ('TYPO3_MODE')) die ('Access denied.');
 
+Tx_Dbmigrate_Utility_ExtensionManagement::loadConfiguration();
+
 if (TYPO3_MODE == 'BE') {
 	Tx_Dbmigrate_Utility_ExtensionManagement::addAjaxControllers();
 

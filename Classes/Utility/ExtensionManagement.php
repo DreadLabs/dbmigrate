@@ -1,5 +1,9 @@
 <?php
 class Tx_Dbmigrate_Utility_ExtensionManagement implements t3lib_Singleton {
+	protected static $shippedConfiguration = 'Configuration/Global/config.php';
+
+	protected static $instanceConfiguration = 'dbmigrate_config.php';
+
 	protected static $ajaxControllers = array(
 		'tx_dbmigrate::enable_logging' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->enableLogging',
 		'tx_dbmigrate::disable_logging' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->disableLogging',
@@ -8,6 +12,17 @@ class Tx_Dbmigrate_Utility_ExtensionManagement implements t3lib_Singleton {
 		'tx_dbmigrate::is_logging_disabled' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->isLoggingDisabled',
 		'tx_dbmigrate::is_table_active' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->isTableActive',
 	);
+
+	public static function loadConfiguration() {
+		$defaultConfiguration = t3lib_extMgm::extPath('dbmigrate', self::$shippedConfiguration);
+		include_once($defaultConfiguration);
+
+		$instanceConfiguration = PATH_typo3conf . self::$instanceConfiguration;
+
+		if (TRUE === @file_exists($instanceConfiguration)) {
+			include_once($instanceConfiguration);
+		}
+	}
 
 	public static function addAjaxControllers() {
 		foreach (self::$ajaxControllers as $ajaxId => $controllerReference) {
