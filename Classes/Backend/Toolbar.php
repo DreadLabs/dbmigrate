@@ -101,7 +101,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function addToolbarItem() {
-		$title = 'dbmigrate'; //$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:rm.clearCache_clearCache', TRUE);
+		$title =$GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.title', TRUE);
 		$icon = t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database', array(
 			'title' => $title
 		));
@@ -129,14 +129,14 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$actions[] = array(
 			'href' => 'ajax.php?ajaxID=tx_dbmigrate::enable_logging',
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-hide'),
-			'title' => 'enable logging',
+			'title' => $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.control.enable_logging', TRUE),
 			'visible-if' => 'tx_dbmigrate::is_logging_disabled',
 		);
 
 		$actions[] = array(
 			'href' => 'ajax.php?ajaxID=tx_dbmigrate::disable_logging',
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-unhide'),
-			'title' => 'disable logging',
+			'title' => $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.control.disable_logging', TRUE),
 			'visible-if' => 'tx_dbmigrate::is_logging_enabled',
 		);
 
@@ -158,7 +158,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function addToolbarItemMenuDivider() {
-		$sectionSubtitle = 'Select the tables to log:'; //$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:rm.clearCache_clearCache', TRUE);
+		$sectionSubtitle = $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.divider', TRUE);
 
 		$divider = array();
 

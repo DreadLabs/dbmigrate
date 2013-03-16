@@ -6,11 +6,12 @@
 		border-bottom: 1px solid transparent;
 	/*	border-bottom: 1px solid #2b2b2b;*/
 		height: 0px;
-		margin: 5px 0;
+		margin: 0;
 	}
-	#tx-dbmigrate-menu .header {
-		padding: 1px 3px 2px 3px;
+	#tx-dbmigrate-menu .toolbar-item-menu .header {
+		background-color: #dbdbdb;
+		padding: 3px;
 	}
-	#tx-dbmigrate-menu .header:hover {
-		background: none;
+	#tx-dbmigrate-menu .toolbar-item-menu .header:hover {
+		background: #dbdbdb;
 	}
