@@ -12,6 +12,8 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	protected $backendReference;
 
+	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
+
 	protected static $ajaxUrlTemplate = 'ajax.php?ajaxID=%s%s';
 
 	protected static $toolbarItemMenuStart = '<ul class="toolbar-item-menu" style="display: none;">';
@@ -87,12 +89,16 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function addToolbarItem() {
-		$title = $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.title', TRUE);
+		$title = $this->getTranslation('toolbar.item.title');
 		$icon = t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database', array(
 			'title' => $title
 		));
 
 		$this->toolbarItemMenu[] = '<a href="#" class="toolbar-item">' . $icon . '</a>';
+	}
+
+	protected function getTranslation($key) {
+		return $GLOBALS['LANG']->sL(self::$translationCatalogue . ':' . $key, TRUE);
 	}
 
 	protected function addToolbarItemMenu() {
@@ -110,24 +116,23 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function getControlMenuItems() {
-		$actions = array();
+		$items = array();
 
-		$actions[] = array(
+		$items[] = array(
 			'href' => $this->buildAjaxUrl('tx_dbmigrate::enable_logging'),
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-hide'),
-			'title' => $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.control.enable_logging', TRUE),
+			'title' => $this->getTranslation('toolbar.item.menu.control.enable_logging'),
 			'visible-if' => 'tx_dbmigrate::is_logging_disabled',
 		);
 
-		$actions[] = array(
+		$items[] = array(
 			'href' => $this->buildAjaxUrl('tx_dbmigrate::disable_logging'),
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-unhide'),
-			'title' => $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.control.disable_logging', TRUE),
+			'title' => $this->getTranslation('toolbar.item.menu.control.disable_logging'),
 			'visible-if' => 'tx_dbmigrate::is_logging_enabled',
 		);
 
-		return $actions;
-
+		return $items;
 	}
 
 	protected function addToolbarItemMenuItems($items) {
@@ -144,7 +149,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function addToolbarItemMenuDivider() {
-		$sectionSubtitle = $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.divider', TRUE);
+		$sectionSubtitle = $this->getTranslation('toolbar.item.menu.divider');
 
 		$divider = array();
 
@@ -173,7 +178,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$missingTableItem = array(
 			'href' => '#',
 			'icon' => t3lib_iconWorks::getSpriteIcon('status-status-icon-missing'),
-			'title' => sprintf($GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.table_missing'), $table),
+			'title' => sprintf($this->getTranslation('toolbar.item.menu.table_missing'), $table),
 			'visible-if' => '',
 		);
 
