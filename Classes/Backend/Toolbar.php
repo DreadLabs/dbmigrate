@@ -38,7 +38,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 				continue;
 			}
 
-			$this->allowedTables[$tableName] = $tableConfiguration['icon'];
+			$this->allowedTables[$tableName] = $tableConfiguration;
 		}
 	}
 
@@ -158,16 +158,16 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	protected function getTableMenuItems() {
 		$items = array();
 
-		foreach ($this->allowedTables as $table => $icon) {
-			$items[] = $this->getTableMenuItem($table, $icon);
+		foreach ($this->allowedTables as $table => $tableConfiguration) {
+			$items[] = $this->getTableMenuItem($table, $tableConfiguration);
 		}
 
 		return $items;
 	}
 
-	protected function getTableMenuItem($table, $icon) {
+	protected function getTableMenuItem($table, $tableConfiguration) {
 		$tableExistsInTCA = TRUE === isset($GLOBALS['TCA'][$table]);
-		$tableItemIsForced = TRUE === $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate']['loggingTables'][$table]['force'];
+		$tableItemIsForced = TRUE === $tableConfiguration['force'];
 		$dontUseMissingTableItem = $tableExistsInTCA || $tableItemIsForced;
 
 		$missingTableItem = array(
@@ -182,12 +182,12 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		if ($tableExistsInTCA) {
 			$titleReference = $GLOBALS['TCA'][$table]['ctrl']['title'];
 		} else if ($tableItemIsForced) {
-			$titleReference = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate']['loggingTables'][$table]['title'];
+			$titleReference = $tableConfiguration['title'];
 		}
 
 		if ($dontUseMissingTableItem) {
 			$title = $GLOBALS['LANG']->sL($titleReference, TRUE);
-			$item = $this->buildTableMenuItem($table, $icon, $title);
+			$item = $this->buildTableMenuItem($table, $tableConfiguration['icon'], $title);
 		}
 
 		return $item;
