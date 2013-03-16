@@ -45,6 +45,8 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'] = array(
 		'sys_history' => array(
 			'active' => TRUE,
 			'icon' => 'actions-document-history-open',
+			'force' => TRUE,
+			'title' => 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.item.title.sys_history',
 		),
 		'sys_language' => array(
 			'active' => TRUE,

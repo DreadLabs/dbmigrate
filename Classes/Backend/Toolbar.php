@@ -12,40 +12,15 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	protected $backendReference;
 
-	protected static $TOOLBAR_ITEM_MENU_START = '<ul class="toolbar-item-menu" style="display: none;">';
+	protected static $ajaxUrlTemplate = 'ajax.php?ajaxID=%s%s';
 
-	protected static $TOOLBAR_ITEM_MENU_END = '</ul>';
+	protected static $toolbarItemMenuStart = '<ul class="toolbar-item-menu" style="display: none;">';
 
-	protected static $TOOLBAR_ITEM_MENU_ITEM_TEMPLATE = '<li data-visible-if="%visible-if%"><a href="%href%">%icon% %title%</a></li>';
+	protected static $toolbarItemMenuEnd = '</ul>';
 
-	protected $allowedTables = array(
-		'backend_layout' => 'tcarecords-backend_layout-default',
-		'be_groups' => 'status-user-group-backend',
-		'be_users' => 'status-user-backend',
-		'fe_groups' => 'status-user-group-frontend',
-		'fe_users' => 'status-user-frontend',
-		'pages' => 'apps-pagetree-page-default',
-		'pages_language_overlay' => 'mimetypes-x-content-page-language-overlay',
-#		'sys_collection',
-#		'sys_collection_entries',
-		'sys_domain' => 'apps-pagetree-page-domain',
-		'sys_history' => 'actions-document-history-open',
-		'sys_language' => 'mimetypes-x-sys_language',
-#		'sys_refindex' => '',
-		'sys_template' => 'mimetypes-x-content-template',
-		'sys_workspace' => 'mimetypes-x-sys_workspace',
-		'sys_workspace_stage' => 'mimetypes-x-sys_workspace',
-		'tt_content' => 'mimetypes-x-content-text',
-#		'tx_cscounterplus_info',
-#		'tx_fed_domain_model_datasource' => '',
-#		'tx_form4_pages_rss_feed' => '',
-#		'tx_gridelements_backend_layout' => '',
-#		'tx_realurl_redirects' => '',
-#		'tx_realurl_uniqalias' => '',
-#		'tx_rsaauth_keys' => '',
-#		'tx_rtehtmlarea_acronym' => '',
-		//'tx_scheduler_task' => ''
-	);
+	protected static $toolbarItemMenuItemTemplate = '<li data-visible-if="%visible-if%"><a href="%href%">%icon% %title%</a></li>';
+
+	protected $allowedTables = array();
 
 	/**
 	 * constructor that receives a back reference to the backend
@@ -54,6 +29,17 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	public function __construct(TYPO3backend &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
+
+		$globalExtensionConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'];
+		$tableConfigurations = $globalExtensionConfiguration['loggingTables'];
+
+		foreach ($tableConfigurations as $tableName => $tableConfiguration) {
+			if (FALSE === $tableConfiguration['active']) {
+				continue;
+			}
+
+			$this->allowedTables[$tableName] = $tableConfiguration['icon'];
+		}
 	}
 
 	/**
@@ -101,7 +87,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function addToolbarItem() {
-		$title =$GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.title', TRUE);
+		$title = $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.title', TRUE);
 		$icon = t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database', array(
 			'title' => $title
 		));
@@ -110,7 +96,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function addToolbarItemMenu() {
-		$this->toolbarItemMenu[] = self::$TOOLBAR_ITEM_MENU_START;
+		$this->toolbarItemMenu[] = self::$toolbarItemMenuStart;
 
 		$controlItems = $this->getControlMenuItems();
 		$this->addToolbarItemMenuItems($controlItems);
@@ -120,21 +106,21 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$tableItems = $this->getTableMenuItems();
 		$this->addToolbarItemMenuItems($tableItems);
 
-		$this->toolbarItemMenu[] = self::$TOOLBAR_ITEM_MENU_END;
+		$this->toolbarItemMenu[] = self::$toolbarItemMenuEnd;
 	}
 
 	protected function getControlMenuItems() {
 		$actions = array();
 
 		$actions[] = array(
-			'href' => 'ajax.php?ajaxID=tx_dbmigrate::enable_logging',
+			'href' => $this->buildAjaxUrl('tx_dbmigrate::enable_logging'),
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-hide'),
 			'title' => $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.control.enable_logging', TRUE),
 			'visible-if' => 'tx_dbmigrate::is_logging_disabled',
 		);
 
 		$actions[] = array(
-			'href' => 'ajax.php?ajaxID=tx_dbmigrate::disable_logging',
+			'href' => $this->buildAjaxUrl('tx_dbmigrate::disable_logging'),
 			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-unhide'),
 			'title' => $GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.control.disable_logging', TRUE),
 			'visible-if' => 'tx_dbmigrate::is_logging_enabled',
@@ -153,7 +139,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 				'%visible-if%' => $item['visible-if'],
 			);
 
-			$this->toolbarItemMenu[] = strtr(self::$TOOLBAR_ITEM_MENU_ITEM_TEMPLATE, $replacePairs);
+			$this->toolbarItemMenu[] = strtr(self::$toolbarItemMenuItemTemplate, $replacePairs);
 		}
 	}
 
@@ -173,18 +159,59 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$items = array();
 
 		foreach ($this->allowedTables as $table => $icon) {
-			$titleReference = $GLOBALS['TCA'][$table]['ctrl']['title'];
-			$title = $GLOBALS['LANG']->sL($titleReference, TRUE);
-
-			$items[] = array(
-				'href' => 'ajax.php?ajaxID=tx_dbmigrate::toggle_table&table=' . $table,
-				'icon' => t3lib_iconWorks::getSpriteIcon($icon),
-				'title' => $title ? $title : $table,
-				'visible-if' => 'tx_dbmigrate::is_table_active&table=' . $table .'&icon=' . $icon,
-			);
+			$items[] = $this->getTableMenuItem($table, $icon);
 		}
 
 		return $items;
+	}
+
+	protected function getTableMenuItem($table, $icon) {
+		$tableExistsInTCA = TRUE === isset($GLOBALS['TCA'][$table]);
+		$tableItemIsForced = TRUE === $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate']['loggingTables'][$table]['force'];
+		$dontUseMissingTableItem = $tableExistsInTCA || $tableItemIsForced;
+
+		$missingTableItem = array(
+			'href' => '#',
+			'icon' => t3lib_iconWorks::getSpriteIcon('status-status-icon-missing'),
+			'title' => sprintf($GLOBALS['LANG']->sL('LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.table_missing'), $table),
+			'visible-if' => '',
+		);
+
+		$item = $missingTableItem;
+
+		if ($tableExistsInTCA) {
+			$titleReference = $GLOBALS['TCA'][$table]['ctrl']['title'];
+		} else if ($tableItemIsForced) {
+			$titleReference = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate']['loggingTables'][$table]['title'];
+		}
+
+		if ($dontUseMissingTableItem) {
+			$title = $GLOBALS['LANG']->sL($titleReference, TRUE);
+			$item = $this->buildTableMenuItem($table, $icon, $title);
+		}
+
+		return $item;
+	}
+
+	protected function buildTableMenuItem($table, $icon, $title) {
+		$item = array(
+			'href' => $this->buildAjaxUrl('tx_dbmigrate::toggle_table', array('table' => $table)),
+			'icon' => t3lib_iconWorks::getSpriteIcon($icon),
+			'title' => $title ? $title : $table,
+			'visible-if' => 'tx_dbmigrate::is_table_active&table=' . $table .'&icon=' . $icon,
+		);
+
+		return $item;
+	}
+
+	protected function buildAjaxUrl($ajaxId, $additionalParams = array()) {
+		$additionalQueryString = '';
+
+		foreach ($additionalParams as $paramKey => $paramValue) {
+			$additionalQueryString .= '&' . $paramKey . '=' . urlencode($paramValue);
+		}
+
+		return sprintf(self::$ajaxUrlTemplate, $ajaxId, $additionalQueryString);
 	}
 }
 

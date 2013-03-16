@@ -10,12 +10,16 @@
 			<label index="toolbar.item.menu.control.enable_logging">enable logging</label>
 			<label index="toolbar.item.menu.control.disable_logging">disable logging</label>
 			<label index="toolbar.item.menu.divider">Select tables to monitor:</label>
+			<label index="toolbar.item.menu.table_missing">"%s" not found in TCA!</label>
+			<label index="toolbar.item.menu.item.title.sys_history">System history</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="toolbar.item.title">Datenbankänderungsmanagement</label>
 			<label index="toolbar.item.menu.control.enable_logging">Protokollierung aktivieren</label>
 			<label index="toolbar.item.menu.control.disable_logging">Protokollierung deaktivieren</label>
 			<label index="toolbar.item.menu.divider">Folgende Tabellen protokollieren:</label>
+			<label index="toolbar.item.menu.table_missing">"%s" im TCA nicht vorhanden!</label>
+			<label index="toolbar.item.menu.item.title.sys_history">Systemversionierung</label>
 		</languageKey>
 	</data>
 </T3locallang>

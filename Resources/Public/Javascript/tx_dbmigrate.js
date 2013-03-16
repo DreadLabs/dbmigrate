@@ -67,7 +67,7 @@ var DbmigrateMenu = Class.create({
 			var
 				visibleIf = $(element).readAttribute('data-visible-if');
 
-			if (null !== visibleIf) {
+			if (null !== visibleIf && '' !== visibleIf) {
 				self.fetchStatus.call(self, element);
 			}
 		});
