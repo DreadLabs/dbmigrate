@@ -12,6 +12,14 @@
 			<label index="toolbar.item.menu.divider">Select tables to monitor:</label>
 			<label index="toolbar.item.menu.table_missing">"%s" not found in TCA!</label>
 			<label index="toolbar.item.menu.item.title.sys_history">System history</label>
+			<label index="task.title">Database change management.</label>
+			<label index="task.overview">Repository maintenance tasks.</label>
+			<label index="task.header.select">Select action</label>
+			<label index="task.header.configure">Configure</label>
+			<label index="task.header.processing">Processing</label>
+			<label index="task.action.commit.description">Commits one or more changes to the repository</label>
+			<label index="task.action.init.description">Initializes the repository by creating a baseline dump</label>
+			<label index="task.action.pull.description">Pulls in changes to the local database</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="toolbar.item.title">Datenbankänderungsmanagement</label>
@@ -20,6 +28,14 @@
 			<label index="toolbar.item.menu.divider">Folgende Tabellen protokollieren:</label>
 			<label index="toolbar.item.menu.table_missing">"%s" im TCA nicht vorhanden!</label>
 			<label index="toolbar.item.menu.item.title.sys_history">Systemversionierung</label>
+			<label index="task.title">Datenbankänderungsmanagement.</label>
+			<label index="task.overview">Pflege des Datendepots.</label>
+			<label index="task.header.select">Aktion auswählen</label>
+			<label index="task.header.configure">Einstellungen</label>
+			<label index="task.header.processing">Ausführen von</label>
+			<label index="task.action.commit.description">Überträgt Änderungen an das Datendepot</label>
+			<label index="task.action.init.description">Initialisiert das Datendepot und erstellt einen Baseline-Dump</label>
+			<label index="task.action.pull.description">Führt Änderungen auf die lokale Datenbank aus</label>
 		</languageKey>
 	</data>
 </T3locallang>
