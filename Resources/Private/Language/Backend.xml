@@ -19,6 +19,9 @@
 			<label index="task.header.processing">Processing</label>
 			<label index="task.action.submit">Execute</label>
 			<label index="task.action.commit.description">Commits one or more changes to the repository</label>
+			<label index="task.action.commit.field.subject.label">Enter a short but crisp subject</label>
+			<label index="task.action.commit.field.description.label">Enter a meaningful description</label>
+			<label index="task.action.commit.field.change.label">Select changes to commit</label>
 			<label index="task.action.init.description">Initializes the repository by creating a baseline dump</label>
 			<label index="task.action.init.field.repository.label">URL/Path of git repository</label>
 			<label index="task.action.init.field.default.label">Default TYPO3 content related tables</label>
@@ -40,6 +43,9 @@
 			<label index="task.header.processing">Ausführen von</label>
 			<label index="task.action.submit">Ausführen</label>
 			<label index="task.action.commit.description">Überträgt Änderungen an das Datendepot</label>
+			<label index="task.action.commit.field.subject.label">Ein kurzer, knackiger Betreff</label>
+			<label index="task.action.commit.field.description.label">Eine sinnvolle Beschreibung</label>
+			<label index="task.action.commit.field.change.label">Änderungen auswählen</label>
 			<label index="task.action.init.description">Initialisiert das Datendepot und erstellt einen Baseline-Dump</label>
 			<label index="task.action.init.field.repository.label">URL/Pfad zum Git Datendepot</label>
 			<label index="task.action.init.field.default.label">Standard-TYPO3-Inhaltstabellen</label>
