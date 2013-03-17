@@ -19,6 +19,7 @@
 			<label index="task.header.processing">Processing</label>
 			<label index="task.action.submit">Execute</label>
 			<label index="task.action.commit.description">Commits one or more changes to the repository</label>
+			<label index="task.action.commit.field.author.label">Author</label>
 			<label index="task.action.commit.field.subject.label">Enter a short but crisp subject</label>
 			<label index="task.action.commit.field.description.label">Enter a meaningful description</label>
 			<label index="task.action.commit.field.change.label">Select changes to commit</label>
@@ -43,6 +44,7 @@
 			<label index="task.header.processing">Ausführen von</label>
 			<label index="task.action.submit">Ausführen</label>
 			<label index="task.action.commit.description">Überträgt Änderungen an das Datendepot</label>
+			<label index="task.action.commit.field.author.label">Author</label>
 			<label index="task.action.commit.field.subject.label">Ein kurzer, knackiger Betreff</label>
 			<label index="task.action.commit.field.description.label">Eine sinnvolle Beschreibung</label>
 			<label index="task.action.commit.field.change.label">Änderungen auswählen</label>

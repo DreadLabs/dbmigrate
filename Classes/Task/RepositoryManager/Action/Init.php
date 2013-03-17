@@ -118,7 +118,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	protected function addRepositoryRemote() {
 		$replacePairs = array(
 			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', self::$targetPath)),
-			'%remoteName%' => 'master',
+			'%remoteName%' => 'origin',
 			'%remotePath%' => escapeshellcmd(t3lib_div::_GP('repository')),
 		);
 
