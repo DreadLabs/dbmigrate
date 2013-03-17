@@ -8,13 +8,20 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName%</option>';
 
 	public function getOptions() {
-		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.commit.field.subject.label'), '<input name="subject" value="" size="60" />');
+		$this->options[] = array(
+			'label' => $this->getTranslation('task.action.commit.field.subject.label'),
+			'field' => '<input name="subject" value="" size="60" />',
+		);
 
-		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.commit.field.description.label'), '<textarea name="description" cols="60" rows="5"></textarea>');
+		$this->options[] = array(
+			'label' => $this->getTranslation('task.action.commit.field.description.label'),
+			'field' => '<textarea name="description" cols="60" rows="5"></textarea>',
+		);
 
-		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.commit.field.change.label'), '<select name="change" multiple="multiple" size="10">' . $this->getChanges() . '</select>');
-
-		return parent::getOptions();
+		$this->options[] = array(
+			'label' => $this->getTranslation('task.action.commit.field.change.label'),
+			'field' => '<select name="change" multiple="multiple" size="10">' . $this->getChanges() . '</select>',
+		);
 	}
 
 	public function getChanges() {

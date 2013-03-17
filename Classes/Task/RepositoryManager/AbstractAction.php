@@ -15,13 +15,17 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 		return strtolower(array_pop($parts));
 	}
 
-	public function getOptions() {
+	public final function renderForm() {
+		$this->getOptions();
+
 		$name = $this->getName();
 		$url = 'mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=' . $name . '&submit=' . $name;
 
 		$optionsForm = '<form action="' . $url . '" method="post">';
 
-		$optionsForm .=  implode(LF, $this->options);
+		foreach ($this->options as $option) {
+			$optionsForm .=  $this->buildOptionField($option['label'], $option['field']);
+		}
 
 		$optionsForm .= '<br />';
 

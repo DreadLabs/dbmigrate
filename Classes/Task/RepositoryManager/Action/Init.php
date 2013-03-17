@@ -45,15 +45,25 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	protected static $targetPath = 'Resources/Public/Migrations/';
 
 	public function getOptions() {
-		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.projectName.label'), '<input name="projectName" value="' . $this->getNormalizedProjectNameFromSysSitename() . '" size="60" />');
+		$this->options[] = array(
+			'label' => $this->getTranslation('task.action.init.field.projectName.label'),
+			'field' => '<input name="projectName" value="' . $this->getNormalizedProjectNameFromSysSitename() . '" size="60" />',
+		);
 
-		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.repository.label'), '<input name="repository" value="" size="60" />');
+		$this->options[] = array(
+			'label' => $this->getTranslation('task.action.init.field.repository.label'),
+			'field' => '<input name="repository" value="" size="60" />',
+		);
 
-		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.default.label'), '<textarea name="default" cols="60" rows="5">' . implode(' ', self::$defaultTables) . '</textarea>');
+		$this->options[] = array(
+			'label' => $this->getTranslation('task.action.init.field.default.label'),
+			'field' => '<textarea name="default" cols="60" rows="5">' . implode(' ', self::$defaultTables) . '</textarea>',
+		);
 
-		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.additional.label'), '<textarea name="additional" cols="60" rows="5"></textarea>');
-
-		return parent::getOptions();
+		$this->options[] = array(
+			'label' => $this->getTranslation('task.action.init.field.additional.label'),
+			'field' => '<textarea name="additional" cols="60" rows="5"></textarea>',
+		);
 	}
 
 	protected function getNormalizedProjectNameFromSysSitename($override = NULL) {

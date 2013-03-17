@@ -29,7 +29,7 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 		if (NULL !== t3lib_div::_GP('select') && NULL === t3lib_div::_GP('submit')) {
 			$content .= '<br />';
 			$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.configure') . ' ' . $this->action->getName() . '</h2>';
-			$content .= $this->action->getOptions();
+			$content .= $this->action->renderForm();
 		}
 
 		if (NULL !== t3lib_div::_GP('submit')) {

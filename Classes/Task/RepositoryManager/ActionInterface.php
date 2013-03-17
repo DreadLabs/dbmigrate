@@ -4,6 +4,8 @@ interface Tx_Dbmigrate_Task_RepositoryManager_Action {
 
 	public function getOptions();
 
+	public function renderForm();
+
 	public function process();
 }
 ?>
