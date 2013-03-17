@@ -9,6 +9,8 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 
 	protected static $commitCommand = 'cd %changesPath% && git add -f %changes% && git commit -m %commitMessage% --author=%author% %changes% && git push origin master 2>&1';
 
+	protected static $updateIndexCommand = 'cd %changesPath% && git update-index --assume-unchanged %changes% 2>&1';
+
 	protected static $authorTemplate = '%name% <%email%>';
 
 	public function getOptions() {
@@ -135,6 +137,15 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 				throw new Exception(sprintf('Failure during removing a committed change %s. Please check directory permissions.', $change));
 			}
 		}
+
+		$replacePairs = array(
+			'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', self::$changesPath),
+			'%changes%' => implode(' ', t3lib_div::_GP('change')),
+		);
+
+		$command = strtr(self::$updateIndexCommand, $replacePairs);
+
+		$this->executeCommand($command, 'Updating the index for setting the "assume unchanged" flag for the commited changes failed. Please see the following output for details:');
 
 		return 'Successfully removed committed changes.';
 	}
