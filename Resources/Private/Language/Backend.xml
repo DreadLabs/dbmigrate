@@ -17,8 +17,13 @@
 			<label index="task.header.select">Select action</label>
 			<label index="task.header.configure">Configure</label>
 			<label index="task.header.processing">Processing</label>
+			<label index="task.action.submit">Execute</label>
 			<label index="task.action.commit.description">Commits one or more changes to the repository</label>
 			<label index="task.action.init.description">Initializes the repository by creating a baseline dump</label>
+			<label index="task.action.init.field.repository.label">URL/Path of git repository</label>
+			<label index="task.action.init.field.default.label">Default TYPO3 content related tables</label>
+			<label index="task.action.init.field.additional.label">Additional tables from extensions which provides content in any way:</label>
+			<label index="task.action.init.field.projectName.label">Project name:</label>
 			<label index="task.action.pull.description">Pulls in changes to the local database</label>
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -33,8 +38,13 @@
 			<label index="task.header.select">Aktion auswählen</label>
 			<label index="task.header.configure">Einstellungen</label>
 			<label index="task.header.processing">Ausführen von</label>
+			<label index="task.action.submit">Ausführen</label>
 			<label index="task.action.commit.description">Überträgt Änderungen an das Datendepot</label>
 			<label index="task.action.init.description">Initialisiert das Datendepot und erstellt einen Baseline-Dump</label>
+			<label index="task.action.init.field.repository.label">URL/Pfad zum Git Datendepot</label>
+			<label index="task.action.init.field.default.label">Standard-TYPO3-Inhaltstabellen</label>
+			<label index="task.action.init.field.additional.label">Zusätzliche Tabellen von Extensions, die Inhalte darstellen:</label>
+			<label index="task.action.init.field.projectName.label">Projekttitel:</label>
 			<label index="task.action.pull.description">Führt Änderungen auf die lokale Datenbank aus</label>
 		</languageKey>
 	</data>

@@ -45,13 +45,13 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	protected static $targetPath = 'Resources/Public/Migrations/';
 
 	public function getOptions() {
-		$this->options[] = '<label for="repository"><h3>URL/Path of git repository</h3><input name="repository" value="" size="60" /></label>';
+		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.repository.label'), '<input name="repository" value="" size="60" />');
 
-		$this->options[] = '<label for="default"><h3>Default TYPO3 content related tables:</h3><textarea name="default" cols="60" rows="5">' . implode(' ', self::$defaultTables) . '</textarea></label><br />';
+		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.default.label'), '<textarea name="default" cols="60" rows="5">' . implode(' ', self::$defaultTables) . '</textarea>');
 
-		$this->options[] = '<label for="additional"><h3>Additional tables from extensions which provides content in any way:</h3><textarea name="additional" cols="60" rows="5"></textarea></label><br />';
+		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.additional.label'), '<textarea name="additional" cols="60" rows="5"></textarea>');
 
-		$this->options[] = '<label for="projectName"><h3>Project name:</h3><input name="projectName" value="' . $this->getNormalizedProjectNameFromSysSitename() . '" size="60" /></label><br /><br />';
+		$this->options[] = $this->buildOptionField($this->getTranslation('task.action.init.field.projectName.label'), '<input name="projectName" value="' . $this->getNormalizedProjectNameFromSysSitename() . '" size="60" />');
 
 		return parent::getOptions();
 	}

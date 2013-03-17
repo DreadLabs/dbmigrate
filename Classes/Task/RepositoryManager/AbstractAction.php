@@ -2,7 +2,12 @@
 require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/ActionInterface.php');
 
 abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_Dbmigrate_Task_RepositoryManager_Action {
+
 	protected $options = array();
+
+	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
+
+	protected static $optionFieldTemplate = '<label><h3 class="uppercase">%label%</h3>%field%</label><br />';
 
 	public function getName() {
 		$parts = explode('_', get_class($this));
@@ -16,13 +21,23 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 
 		$optionsForm = '<form action="' . $url . '" method="post">';
 
-		$optionsForm .= implode(LF, $this->options);
+		$optionsForm .=  implode(LF, $this->options);
 
-		$optionsForm .= '<input type="submit" name="execute" value="Execute" />';
+		$optionsForm .= '<br />';
+
+		$optionsForm .= '<input type="submit" name="execute" value="' . $this->getTranslation('task.action.submit') . '" />';
 
 		$optionsForm .= '</form>';
 
 		return $optionsForm;
+	}
+
+	protected function buildOptionField($label, $field) {
+		$replacePairs = array(
+			'%label%' => $label,
+			'%field%' => $field,
+		);
+		return strtr(self::$optionFieldTemplate, $replacePairs);
 	}
 
 	protected function executeCommand($command, $errorPreface = '') {
@@ -45,6 +60,10 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 		$msg .= '<pre>' . implode(LF, $output) . '</pre>';
 
 		throw new Exception($msg);
+	}
+
+	protected function getTranslation($key) {
+		return $GLOBALS['LANG']->sL(self::$translationCatalogue . ':' . $key, TRUE);
 	}
 }
 ?>
