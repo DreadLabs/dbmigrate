@@ -172,8 +172,8 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
 	protected function getTableMenuItem($table, $tableConfiguration) {
 		$tableExistsInTCA = TRUE === isset($GLOBALS['TCA'][$table]);
-		$tableItemIsForced = TRUE === $tableConfiguration['force'];
-		$dontUseMissingTableItem = $tableExistsInTCA || $tableItemIsForced;
+		$tableHasCustomTitle = TRUE === isset($tableConfiguration['title']);
+		$isTableTitleDeterminable = $tableExistsInTCA || $tableHasCustomTitle;
 
 		$missingTableItem = array(
 			'href' => '#',
@@ -186,11 +186,11 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
 		if ($tableExistsInTCA) {
 			$titleReference = $GLOBALS['TCA'][$table]['ctrl']['title'];
-		} else if ($tableItemIsForced) {
+		} else if ($tableHasCustomTitle) {
 			$titleReference = $tableConfiguration['title'];
 		}
 
-		if ($dontUseMissingTableItem) {
+		if ($isTableTitleDeterminable) {
 			$title = $GLOBALS['LANG']->sL($titleReference, TRUE);
 			$item = $this->buildTableMenuItem($table, $tableConfiguration['icon'], $title);
 		}
