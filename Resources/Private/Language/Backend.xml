@@ -29,6 +29,10 @@
 			<label index="task.action.init.field.additional.label">Additional tables from extensions which provides content in any way:</label>
 			<label index="task.action.init.field.projectName.label">Project name:</label>
 			<label index="task.action.pull.description">Pulls in changes to the local database</label>
+			<label index="task.action.review.description">Review a certain change (e.g. frontend generated content)</label>
+			<label index="task.action.review.change.label">Select change to review</label>
+			<label index="task.action.review.textfieldwidth.label">Width of textfield</label>
+			<label index="task.action.review.textfieldheight.label">Height of textfield</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="toolbar.item.title">Datenbankänderungsmanagement</label>
@@ -54,6 +58,10 @@
 			<label index="task.action.init.field.additional.label">Zusätzliche Tabellen von Extensions, die Inhalte darstellen:</label>
 			<label index="task.action.init.field.projectName.label">Projekttitel:</label>
 			<label index="task.action.pull.description">Führt Änderungen auf die lokale Datenbank aus</label>
+			<label index="task.action.review.description">Ein Review einer bestimmten Änderung durchführen (z.B. durch das Frontend generierte Änderungen)</label>
+			<label index="task.action.review.change.label">Eine Änderung auswählen</label>
+			<label index="task.action.review.textfieldwidth.label">Textfeldbreite</label>
+			<label index="task.action.review.textfieldheight.label">Textfeldhöhe</label>
 		</languageKey>
 	</data>
 </T3locallang>
