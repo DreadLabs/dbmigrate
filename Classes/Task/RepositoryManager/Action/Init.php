@@ -28,6 +28,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 		'sys_note',
 		'sys_refindex',
 		'sys_registry',
+		'sys_template',
 		'sys_workspace',
 		'sys_workspace_stage',
 		'tt_content',
@@ -62,8 +63,24 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.init.field.additional.label'),
-			'field' => '<textarea name="additional" cols="60" rows="5"></textarea>',
+			'field' => '<textarea name="additional" cols="60" rows="5">' . implode(' ', $this->getAdditionalTables()) . '</textarea>',
 		);
+	}
+
+	protected function getAdditionalTables() {
+		$tables = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate']['loggingTables'];
+
+		$additionalTables = array();
+
+		foreach ($tables as $table => $tableConfiguration) {
+			if (TRUE === in_array($table, self::$defaultTables)) {
+				continue;
+			}
+
+			$additionalTables[] = $table;
+		}
+
+		return $additionalTables;
 	}
 
 	protected function getNormalizedProjectNameFromSysSitename($override = NULL) {
