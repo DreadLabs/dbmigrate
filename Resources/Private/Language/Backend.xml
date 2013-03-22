@@ -11,7 +11,10 @@
 			<label index="toolbar.item.menu.control.disable_logging">disable logging</label>
 			<label index="toolbar.item.menu.divider">Select tables to monitor:</label>
 			<label index="toolbar.item.menu.table_missing">"%s" not found in TCA!</label>
+			<label index="toolbar.item.menu.item.title.sys_collection_entries">Record collection entries</label>
 			<label index="toolbar.item.menu.item.title.sys_history">System history</label>
+			<label index="toolbar.item.menu.item.title.sys_refindex">Reference index</label>
+			<label index="toolbar.item.menu.item.title.tx_scheduler_task">Scheduler task</label>
 			<label index="task.title">Database change management.</label>
 			<label index="task.overview">Repository maintenance tasks.</label>
 			<label index="task.header.select">Select action</label>
@@ -40,7 +43,10 @@
 			<label index="toolbar.item.menu.control.disable_logging">Protokollierung deaktivieren</label>
 			<label index="toolbar.item.menu.divider">Folgende Tabellen protokollieren:</label>
 			<label index="toolbar.item.menu.table_missing">"%s" im TCA nicht vorhanden!</label>
+			<label index="toolbar.item.menu.item.title.sys_collection_entries">Datensatzsammlungseinträge</label>
 			<label index="toolbar.item.menu.item.title.sys_history">Systemversionierung</label>
+			<label index="toolbar.item.menu.item.title.sys_refindex">Referenzindex</label>
+			<label index="toolbar.item.menu.item.title.tx_scheduler_task">Geplante Aufgabe</label>
 			<label index="task.title">Datenbankänderungsmanagement.</label>
 			<label index="task.overview">Pflege des Datendepots.</label>
 			<label index="task.header.select">Aktion auswählen</label>

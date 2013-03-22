@@ -31,12 +31,13 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'] = array(
 			'icon' => 'mimetypes-x-content-page-language-overlay',
 		),
 		'sys_collection' => array(
-			'active' => FALSE,
-			'icon' => '', 
+			'active' => TRUE,
+			'icon' => 'apps-clipboard-list', 
 		),
 		'sys_collection_entries' => array(
-			'active' => FALSE,
-			'icon' => '',
+			'active' => TRUE,
+			'icon' => 'apps-clipboard-list',
+			'title' => 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.item.title.sys_collection_entries',
 		),
 		'sys_domain' => array(
 			'active' => TRUE,
@@ -52,8 +53,9 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'] = array(
 			'icon' => 'mimetypes-x-sys_language',
 		),
 		'sys_refindex' => array(
-			'active' => FALSE,
-			'icon' => '', 
+			'active' => TRUE,
+			'icon' => 'extensions-dbmigrate-table-sys_refindex',
+			'title' => 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.item.title.sys_refindex',
 		),
 		'sys_template' => array(
 			'active' => TRUE,
@@ -72,12 +74,13 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'] = array(
 			'icon' => 'mimetypes-x-content-text',
 		),
 		'tx_rtehtmlarea_acronym' => array(
-			'active' => FALSE,
-			'icon' => '', 
+			'active' => TRUE,
+			'icon' => 'extensions-dbmigrate-table-tx_rtehtmlarea_acronym', 
 		),
 		'tx_scheduler_task' => array(
-			'active' => FALSE,
-			'icon' => '' 
+			'active' => TRUE,
+			'icon' => 'extensions-dbmigrate-table-tx_scheduler_task' ,
+			'title' => 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:toolbar.item.menu.item.title.tx_scheduler_task',
 		),
 	),
 );
