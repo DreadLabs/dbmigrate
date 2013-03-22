@@ -90,17 +90,10 @@ var DbmigrateMenu = Class.create({
 	},
 
 	setStatus: function (menuItem, status) {
-		if ('undefined' !== typeof status.status) {
-			if (false === status.status) {
-				$(menuItem).hide();
-			} else {
-				$(menuItem).show();
-			}
-		}
-		if ('undefined' !== typeof status.icon) {
-			if ('' !== status.icon) {
-				$(menuItem).down('.t3-icon').replace(status.icon);
-			}
+		if (false === status.status) {
+			$(menuItem).hide();
+		} else {
+			$(menuItem).show();
 		}
 	},
 

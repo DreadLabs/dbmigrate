@@ -22,8 +22,6 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
 	protected static $toolbarItemMenuItemTemplate = '<li data-visible-if="%visible-if%"><a href="%href%">%icon% %title%</a></li>';
 
-	protected $allowedTables = array();
-
 	/**
 	 * constructor that receives a back reference to the backend
 	 *
@@ -31,17 +29,6 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	public function __construct(TYPO3backend &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
-
-		$globalExtensionConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'];
-		$tableConfigurations = $globalExtensionConfiguration['loggingTables'];
-
-		foreach ($tableConfigurations as $tableName => $tableConfiguration) {
-			if (FALSE === $tableConfiguration['active']) {
-				continue;
-			}
-
-			$this->allowedTables[$tableName] = $tableConfiguration;
-		}
 	}
 
 	/**
@@ -109,8 +96,8 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
 		$this->addToolbarItemMenuDivider();
 
-		$tableItems = $this->getTableMenuItems();
-		$this->addToolbarItemMenuItems($tableItems);
+		$taskActionItems = $this->getTaskActionMenuItems();
+		$this->addToolbarItemMenuItems($taskActionItems);
 
 		$this->toolbarItemMenu[] = self::$toolbarItemMenuEnd;
 	}
@@ -160,53 +147,10 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$this->toolbarItemMenu[] = implode(LF, $divider);
 	}
 
-	protected function getTableMenuItems() {
+	protected function getTaskActionMenuItems() {
 		$items = array();
 
-		foreach ($this->allowedTables as $table => $tableConfiguration) {
-			$items[] = $this->getTableMenuItem($table, $tableConfiguration);
-		}
-
 		return $items;
-	}
-
-	protected function getTableMenuItem($table, $tableConfiguration) {
-		$tableExistsInTCA = TRUE === isset($GLOBALS['TCA'][$table]);
-		$tableHasCustomTitle = TRUE === isset($tableConfiguration['title']);
-		$isTableTitleDeterminable = $tableExistsInTCA || $tableHasCustomTitle;
-
-		$missingTableItem = array(
-			'href' => '#',
-			'icon' => t3lib_iconWorks::getSpriteIcon('status-status-icon-missing'),
-			'title' => sprintf($this->getTranslation('toolbar.item.menu.table_missing'), $table),
-			'visible-if' => '',
-		);
-
-		$item = $missingTableItem;
-
-		if ($tableExistsInTCA) {
-			$titleReference = $GLOBALS['TCA'][$table]['ctrl']['title'];
-		} else if ($tableHasCustomTitle) {
-			$titleReference = $tableConfiguration['title'];
-		}
-
-		if ($isTableTitleDeterminable) {
-			$title = $GLOBALS['LANG']->sL($titleReference, TRUE);
-			$item = $this->buildTableMenuItem($table, $tableConfiguration['icon'], $title);
-		}
-
-		return $item;
-	}
-
-	protected function buildTableMenuItem($table, $icon, $title) {
-		$item = array(
-			'href' => $this->buildAjaxUrl('tx_dbmigrate::toggle_table', array('table' => $table)),
-			'icon' => t3lib_iconWorks::getSpriteIcon($icon),
-			'title' => $title ? $title : $table,
-			'visible-if' => 'tx_dbmigrate::is_table_active&table=' . $table .'&icon=' . $icon,
-		);
-
-		return $item;
 	}
 
 	protected function buildAjaxUrl($ajaxId, $additionalParams = array()) {
