@@ -9,7 +9,10 @@
 			<label index="toolbar.item.title">Database change management</label>
 			<label index="toolbar.item.menu.control.enable_logging">enable logging</label>
 			<label index="toolbar.item.menu.control.disable_logging">disable logging</label>
-			<label index="toolbar.item.menu.divider">Select tables to monitor:</label>
+			<label index="toolbar.item.menu.divider">Select action:</label>
+			<label index="toolbar.item.menu.action.commit">Commit</label>
+			<label index="toolbar.item.menu.action.pull">Pull</label>
+			<label index="toolbar.item.menu.action.review">Review</label>
 			<label index="toolbar.item.menu.table_missing">"%s" not found in TCA!</label>
 			<label index="toolbar.item.menu.item.title.sys_collection_entries">Record collection entries</label>
 			<label index="toolbar.item.menu.item.title.sys_history">System history</label>
@@ -21,6 +24,8 @@
 			<label index="task.header.configure">Configure</label>
 			<label index="task.header.processing">Processing</label>
 			<label index="task.action.submit">Execute</label>
+			<label index="task.action.clone.description">Clone an existing repository for a slave TYPO3 instance</label>
+			<label index="task.action.clone.field.repository.label">URL/Path of git repository</label>
 			<label index="task.action.commit.description">Commits one or more changes to the repository</label>
 			<label index="task.action.commit.field.author.label">Author</label>
 			<label index="task.action.commit.field.subject.label">Enter a short but crisp subject</label>
@@ -41,7 +46,10 @@
 			<label index="toolbar.item.title">Datenbankänderungsmanagement</label>
 			<label index="toolbar.item.menu.control.enable_logging">Protokollierung aktivieren</label>
 			<label index="toolbar.item.menu.control.disable_logging">Protokollierung deaktivieren</label>
-			<label index="toolbar.item.menu.divider">Folgende Tabellen protokollieren:</label>
+			<label index="toolbar.item.menu.divider">Aktion wählen:</label>
+			<label index="toolbar.item.menu.action.commit">Änderungen übertragen</label>
+			<label index="toolbar.item.menu.action.pull">Änderungen ausführen</label>
+			<label index="toolbar.item.menu.action.review">Änderungen reviewen</label>
 			<label index="toolbar.item.menu.table_missing">"%s" im TCA nicht vorhanden!</label>
 			<label index="toolbar.item.menu.item.title.sys_collection_entries">Datensatzsammlungseinträge</label>
 			<label index="toolbar.item.menu.item.title.sys_history">Systemversionierung</label>
@@ -53,6 +61,8 @@
 			<label index="task.header.configure">Einstellungen</label>
 			<label index="task.header.processing">Ausführen von</label>
 			<label index="task.action.submit">Ausführen</label>
+			<label index="task.action.clone.description">Klont ein existierendes Datendepot für eine TYPO3 Trabanteninstallation</label>
+			<label index="task.action.clone.field.repository.label">URL/Pfad zum Git Datendepot</label>
 			<label index="task.action.commit.description">Überträgt Änderungen an das Datendepot</label>
 			<label index="task.action.commit.field.author.label">Author</label>
 			<label index="task.action.commit.field.subject.label">Ein kurzer, knackiger Betreff</label>

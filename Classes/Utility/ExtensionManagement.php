@@ -5,10 +5,7 @@ class Tx_Dbmigrate_Utility_ExtensionManagement implements t3lib_Singleton {
 	protected static $instanceConfiguration = 'dbmigrate_config.php';
 
 	protected static $ajaxControllers = array(
-		'tx_dbmigrate::enable_logging' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->enableLogging',
-		'tx_dbmigrate::disable_logging' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->disableLogging',
-		'tx_dbmigrate::is_logging_enabled' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->isLoggingEnabled',
-		'tx_dbmigrate::is_logging_disabled' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->isLoggingDisabled',
+#		'tx_dbmigrate::is_logging_disabled' => 'EXT:dbmigrate/Classes/Controller/Toolbar.php:Tx_Dbmigrate_Controller_Toolbar->isLoggingDisabled',
 	);
 
 	public static function loadConfiguration() {

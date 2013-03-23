@@ -14,13 +14,11 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
 	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
 
-	protected static $ajaxUrlTemplate = 'ajax.php?ajaxID=%s%s';
-
 	protected static $toolbarItemMenuStart = '<ul class="toolbar-item-menu" style="display: none;">';
 
 	protected static $toolbarItemMenuEnd = '</ul>';
 
-	protected static $toolbarItemMenuItemTemplate = '<li data-visible-if="%visible-if%"><a href="%href%">%icon% %title%</a></li>';
+	protected static $toolbarItemMenuItemTemplate = '<li><a href="%href%">%icon% %title%</a></li>';
 
 	/**
 	 * constructor that receives a back reference to the backend
@@ -91,35 +89,12 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	protected function addToolbarItemMenu() {
 		$this->toolbarItemMenu[] = self::$toolbarItemMenuStart;
 
-		$controlItems = $this->getControlMenuItems();
-		$this->addToolbarItemMenuItems($controlItems);
-
 		$this->addToolbarItemMenuDivider();
 
 		$taskActionItems = $this->getTaskActionMenuItems();
 		$this->addToolbarItemMenuItems($taskActionItems);
 
 		$this->toolbarItemMenu[] = self::$toolbarItemMenuEnd;
-	}
-
-	protected function getControlMenuItems() {
-		$items = array();
-
-		$items[] = array(
-			'href' => $this->buildAjaxUrl('tx_dbmigrate::enable_logging'),
-			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-hide'),
-			'title' => $this->getTranslation('toolbar.item.menu.control.enable_logging'),
-			'visible-if' => 'tx_dbmigrate::is_logging_disabled',
-		);
-
-		$items[] = array(
-			'href' => $this->buildAjaxUrl('tx_dbmigrate::disable_logging'),
-			'icon' => t3lib_iconWorks::getSpriteIcon('actions-edit-unhide'),
-			'title' => $this->getTranslation('toolbar.item.menu.control.disable_logging'),
-			'visible-if' => 'tx_dbmigrate::is_logging_enabled',
-		);
-
-		return $items;
 	}
 
 	protected function addToolbarItemMenuItems($items) {
@@ -150,17 +125,25 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	protected function getTaskActionMenuItems() {
 		$items = array();
 
+		$items[] = array(
+			'href' => '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=commit',
+			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-commit'),
+			'title' => $this->getTranslation('toolbar.item.menu.action.commit'),
+		);
+
+		$items[] = array(
+			'href' => '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=pull',
+			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-pull'),
+			'title' => $this->getTranslation('toolbar.item.menu.action.pull'),
+		);
+
+		$items[] = array(
+			'href' => '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=review',
+			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-review'),
+			'title' => $this->getTranslation('toolbar.item.menu.action.review'),
+		);
+
 		return $items;
-	}
-
-	protected function buildAjaxUrl($ajaxId, $additionalParams = array()) {
-		$additionalQueryString = '';
-
-		foreach ($additionalParams as $paramKey => $paramValue) {
-			$additionalQueryString .= '&' . $paramKey . '=' . urlencode($paramValue);
-		}
-
-		return sprintf(self::$ajaxUrlTemplate, $ajaxId, $additionalQueryString);
 	}
 }
 

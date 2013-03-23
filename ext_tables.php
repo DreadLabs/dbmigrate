@@ -8,6 +8,9 @@ $GLOBALS['TBE_STYLES']['skins']['dbmigrate']['stylesheetDirectories']['structure
 
 $dbmigrateIcons = array(
 	'database' => t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Images/database.png',
+	'database-commit' => t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Images/database-commit.png',
+	'database-pull' => t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Images/database-pull.png',
+	'database-review' => t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Images/database-review.png',
 	'table-sys_refindex' => t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Images/table-sys_refindex.png',
 	'table-tx_rtehtmlarea_acronym' => t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Images/table-tx_rtehtmlarea_acronym.png',
 	'table-tx_scheduler_task' => t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Images/table-tx_scheduler_task.gif',

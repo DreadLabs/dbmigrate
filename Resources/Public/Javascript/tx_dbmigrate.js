@@ -24,6 +24,32 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+Ext.ns('TYPO3.dbmigrate');
+
+TYPO3.dbmigrate.ActionWindow = Ext.extend(Ext.Window, {
+	width: 690,
+	height: 500,
+	closable: true,
+	resizable: true,
+	plain: true,
+	border: false,
+	modal: true,
+	draggable: true,
+	layout: 'anchor',
+	constructor: function(config) {
+		config = config || {};
+		Ext.apply(this, config, {
+			items: [{
+				xtype: 'iframePanel',
+				anchor: '100% 100%',
+				border: false,
+				id: 'dbmigrateActionWindow'
+			}]
+		});
+		TYPO3.dbmigrate.ActionWindow.superclass.constructor.call(this, config);
+	}
+});
+
 /**
  * class to handle the dbmigrate menu
  */
@@ -136,8 +162,7 @@ var DbmigrateMenu = Class.create({
 			// activate the spinner
 			parent = Element.up(toolbarItemIcon),
 			spinner = new Element('span').addClassName('spinner'),
-			oldIcon = toolbarItemIcon.replace(spinner),
-			call = null;
+			oldIcon = toolbarItemIcon.replace(spinner);
 
 		if (clickedElement.tagName === 'SPAN') {
 			link = clickedElement.up('a');
@@ -146,13 +171,16 @@ var DbmigrateMenu = Class.create({
 		}
 
 		if (link.href) {
-			call = new Ajax.Request(link.href, {
-				'method': 'get',
-				'onComplete': function (result) {
-					spinner.replace(oldIcon);
-
-					this.checkStatus();
-				}.bind(this)
+			TYPO3.dbmigrate.TaskActionWindow = new TYPO3.dbmigrate.ActionWindow({
+				title: 'dbmigrate',
+				listeners: {
+					close: function () {
+						spinner.replace(oldIcon);
+						//this.checkStatus();
+					}
+				}
+			}).show(true, function () {
+				Ext.getCmp('dbmigrateActionWindow').setUrl(link.href);
 			});
 		}
 
