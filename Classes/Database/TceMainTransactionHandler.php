@@ -64,15 +64,10 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->user->isLoggingEnabled()) {
-// 			$changeType = $this->user->getUserConfiguration('dmigrate:change:type', NULL);
-// 			$changeId = $this->user->getUserConfiguration('dbmigrate:change:id', NULL);
-
 			$this->user->setUserConfiguration('dbmigrate:change:type', NULL);
 			$this->user->setUserConfiguration('dbmigrate:change:id', NULL);
 
 			$this->db->store_lastBuiltQuery = FALSE;
-
-// 			$this->finishChange($changeType, $changeId);
 		}
 	}
 
@@ -134,9 +129,5 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$fileName = sprintf($this->changeScriptFilenamePattern, $date, $changeId, $changeType);
 		return t3lib_extMgm::extPath('dbmigrate', $this->changeScriptPath . $fileName);
 	}
-
-// 	protected function finishChange($changeType, $changeId) {
-
-// 	}
 }
 ?>
