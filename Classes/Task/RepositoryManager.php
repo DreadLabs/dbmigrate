@@ -8,7 +8,7 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 	protected static $actionPath = '/RepositoryManager/Action/';
 
-	protected static $actionItemTemplate = '<li><a href="%url%">%activeWrapStart%%actionName%%activeWrapEnd%</a><br /><em>%actionDescription%</em></li>';
+	protected static $actionItemTemplate = '<li><a href="%url%">%activeWrapStart%%actionName%%activeWrapEnd%<br /><em>%actionDescription%</em></a></li>';
 
 	/**
 	 *
@@ -18,36 +18,11 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 	public function __construct(SC_mod_user_task_index $taskObject) {
 		$this->taskObject = $taskObject;
-	}
 
-	public function getTask() {
-		$content = '<br />';
-
-		$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.select') . '</h2>';
-		$content .= $this->getActions();
-
-		if (NULL !== t3lib_div::_GP('select') && NULL === t3lib_div::_GP('submit')) {
-			$content .= '<br />';
-			$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.configure') . ' ' . $this->action->getName() . '</h2>';
-			$content .= $this->action->renderForm();
-		}
-
-		if (NULL !== t3lib_div::_GP('submit')) {
-			$content .= '<br />';
-			$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.processing') . ' ' . $this->action->getName() . '...</h2>';
-			$content .= $this->action->process();
-		}
-
-		return $content;
-	}
-
-	public function getOverview() {
-		return '<p>' . $this->getTranslation('task.overview') . '</p>';
+		$this->getActions();
 	}
 
 	protected function getActions() {
-		$list = '<ul>';
-
 		$actions = t3lib_div::getFilesInDir(dirname(__FILE__) . self::$actionPath, 'php', FALSE, 1, '');
 
 		foreach ($actions as $action) {
@@ -61,20 +36,50 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 			$url = 'mod.php?M=user_task&SET[function]=sys_action.' . __CLASS__ . '&select=' . $actionNameNormalized;
 
-			$replacePairs = array(
+			$this->actions[] = array(
 				'%url%' => $url,
 				'%activeWrapStart%' => $isSelectedAction ? '<strong>' : '',
 				'%actionName%' => $actionName,
 				'%activeWrapEnd%' => $isSelectedAction ? '</strong>' : '',
 				'%actionDescription%' => $this->getTranslation('task.action.' . $actionNameNormalized . '.description'),
 			);
-			
-			$list .= strtr(self::$actionItemTemplate, $replacePairs);
+		}
+	}
+
+	public function getOverview() {
+		$content = '<p>' . $this->getTranslation('task.overview') . '</p>';
+
+		$content .= $this->renderActions();
+
+		return $content;
+	}
+
+	protected function renderActions() {
+		$list = '<ul>';
+
+		foreach ($this->actions as $action) {
+			$list .= strtr(self::$actionItemTemplate, $action);
 		}
 
 		$list .= '</ul>';
 
 		return $list;
+	}
+
+	public function getTask() {
+		$content = '<br />';
+
+		if (NULL !== t3lib_div::_GP('select') && NULL === t3lib_div::_GP('submit')) {
+			$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.configure') . ' ' . $this->action->getName() . '</h2>';
+			$content .= $this->action->renderForm();
+		}
+
+		if (NULL !== t3lib_div::_GP('submit')) {
+			$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.processing') . ' ' . $this->action->getName() . '...</h2>';
+			$content .= $this->action->process();
+		}
+
+		return $content;
 	}
 
 	protected function getTranslation($key) {
