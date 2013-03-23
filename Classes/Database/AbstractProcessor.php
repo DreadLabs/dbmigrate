@@ -5,26 +5,32 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 
 	/**
 	 *
+	 * @var Tx_Dbmigrate_Configuration
+	 */
+	protected $configuration = NULL;
+
+	/**
+	 *
 	 * @var Tx_Dbmigrate_Backend_User
 	 */
 	protected $backendUser = NULL;
 
 	protected function init() {
 		if (FALSE === $this->isInitialized) {
+			$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+
 			$this->backendUser = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
 
 			$this->isInitialized = TRUE;
 		}
 	}
 
-	protected function isQueryLoggingEnabled() {
-		return $this->backendUser->isLoggingEnabled();
+	protected function isMonitoringEnabled() {
+		return $this->configuration->isMonitoringEnabled();
 	}
 
 	protected function logQueryForTable($table, $query) {
-		$observedTables = $this->backendUser->getUserConfiguration('dbmigrate:logging:tables', array());
-
-		if (TRUE === array_key_exists($table, $observedTables)) {
+		if (TRUE === $this->configuration->isTableActive($table)) {
 			$this->writeChange($query);
 		}
 	}

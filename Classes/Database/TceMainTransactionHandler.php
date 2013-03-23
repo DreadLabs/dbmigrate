@@ -3,6 +3,12 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 
 	/**
 	 *
+	 * @var Tx_Dbmigrate_Configuration
+	 */
+	protected $configuration = NULL;
+
+	/**
+	 *
 	 * @var Tx_Dbmigrate_Backend_User
 	 */
 	protected $user = NULL;
@@ -18,6 +24,14 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	protected $changeScriptFilenamePattern = '%s-%s-%s.sql';
 
 	protected $changeScriptPath = 'Resources/Public/Migrations/';
+
+	public function injectConfiguration(Tx_Dbmigrate_Configuration $configuration = NULL) {
+		if (TRUE !== is_null($configuration)) {
+			$this->configuration = $configuration;
+		} else {
+			$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+		}
+	}
 
 	public function injectUser(Tx_Dbmigrate_Backend_User $user = NULL) {
 		if (TRUE !== is_null($user)) {
@@ -41,11 +55,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processCmdmap_beforeStart(t3lib_TCEmain $tceMain) {
+		$this->injectConfiguration();
+
 		$this->injectUser();
 
 		$this->injectDatabase();
 
-		if ($this->user->isLoggingEnabled()) {
+		if ($this->configuration->isMonitoringEnabled()) {
 			$this->user->setUserConfiguration('dbmigrate:change:type', 'Command');
 			$this->user->setUserConfiguration('dbmigrate:change:id', $this->getChangeId());
 
@@ -59,11 +75,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processCmdmap_afterFinish(t3lib_TCEmain $tceMain) {
+		$this->injectConfiguration();
+
 		$this->injectUser();
 
 		$this->injectDatabase();
 
-		if ($this->user->isLoggingEnabled()) {
+		if ($this->configuration->isMonitoringEnabled()) {
 			$this->user->setUserConfiguration('dbmigrate:change:type', NULL);
 			$this->user->setUserConfiguration('dbmigrate:change:id', NULL);
 
@@ -77,11 +95,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processDatamap_beforeStart(t3lib_TCEmain $tceMain) {
+		$this->injectConfiguration();
+
 		$this->injectUser();
 
 		$this->injectDatabase();
 
-		if ($this->user->isLoggingEnabled()) {
+		if ($this->configuration->isMonitoringEnabled()) {
 			$this->user->setUserConfiguration('dbmigrate:change:type', 'Data');
 			$this->user->setUserConfiguration('dbmigrate:change:id', $this->getChangeId());
 
@@ -95,11 +115,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processDatamap_afterAllOperations(t3lib_TCEmain $tceMain) {
+		$this->injectConfiguration();
+
 		$this->injectUser();
 
 		$this->injectDatabase();
 
-		if ($this->user->isLoggingEnabled()) {
+		if ($this->configuration->isMonitoringEnabled()) {
 			$this->user->setUserConfiguration('dbmigrate:change:type', NULL);
 			$this->user->setUserConfiguration('dbmigrate:change:id', NULL);
 

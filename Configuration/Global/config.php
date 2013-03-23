@@ -1,7 +1,7 @@
 <?php
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'] = array(
-	'loggingEnabled' => TRUE,
-	'loggingTables' => array(
+	'monitoringEnabled' => TRUE,
+	'monitoringTables' => array(
 		'backend_layout' => array(
 			'active' => TRUE,
 			'icon' => 'tcarecords-backend_layout-default',
