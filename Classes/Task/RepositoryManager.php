@@ -30,8 +30,14 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 			$actionNameNormalized = strtolower($actionName);
 			$isSelectedAction = $actionNameNormalized === t3lib_div::_GP('select');
 
+			$_action = t3lib_div::makeInstance(__CLASS__ . '_Action_' . $actionName);
+
+			if (FALSE === $_action->checkAccess()) {
+				continue;
+			}
+
 			if ($isSelectedAction) {
-				$this->action = t3lib_div::makeInstance(__CLASS__ . '_Action_' . $actionName);
+				$this->action = $_action;
 			}
 
 			$url = 'mod.php?M=user_task&SET[function]=sys_action.' . __CLASS__ . '&select=' . $actionNameNormalized;

@@ -45,6 +45,10 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 	protected static $targetPath = 'Resources/Public/Migrations/';
 
+	public function checkAccess() {
+		return $GLOBALS['BE_USER']->isAdmin();
+	}
+
 	public function getOptions() {
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.init.field.projectName.label'),

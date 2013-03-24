@@ -7,6 +7,10 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName% (%changeSize%)</option>';
 
+	public function checkAccess() {
+		return TRUE;
+	}
+
 	public function getOptions() {
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.review.change.label'),

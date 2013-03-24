@@ -13,6 +13,10 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 
 	protected static $authorTemplate = '%name% <%email%>';
 
+	public function checkAccess() {
+		return TRUE;
+	}
+
 	public function getOptions() {
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.commit.field.author.label'),
