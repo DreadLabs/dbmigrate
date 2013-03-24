@@ -32,20 +32,37 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 		$changes = t3lib_div::getFilesInDir(t3lib_extMgm::extPath('dbmigrate', self::$changesPath), 'sql', FALSE, 1, '');
 
 		foreach ($changes as $change) {
-			$filePath = t3lib_extMgm::extPath('dbmigrate', self::$changesPath . '/' . $change);
-			$fileInformation = stat($filePath);
-			$fileSizeInBytes = $fileInformation['size'];
-			$fileSizeInMegaBytes = $fileSizeInBytes / 1024 / 1024;
+			$changeSize = $this->getFileSize($change);
 
 			$replacePairs = array(
 				'%changeName%' => $change,
-				'%changeSize%' => round($fileSizeInMegaBytes, 1) . 'MB',
+				'%changeSize%' => $changeSize,
 			);
 
 			$options[] = strtr(self::$changeOptionTemplate, $replacePairs);
 		}
 
 		return implode(LF, $options);
+	}
+
+	protected function getFileSize($change) {
+		$filePath = t3lib_extMgm::extPath('dbmigrate', self::$changesPath . '/' . $change);
+		$fileInformation = stat($filePath);
+
+		$fileSizeUnits = array(' Byte', ' KB', ' MB');
+		$maxSize = count($fileSizeUnits);
+		$i = 0;
+
+		$fileSize = $fileInformation['size'];
+		$fileSizeUnit = $fileSizeUnits[$i];
+
+		while ($fileSize > 1024 || $i === $maxSize) {
+			$i = $i + 1;
+			$fileSizeUnit = $fileSizeUnits[$i];
+			$fileSize = $fileSize / 1024;
+		}
+
+		return round($fileSize, 1) . $fileSizeUnit;
 	}
 
 	public function process() {
