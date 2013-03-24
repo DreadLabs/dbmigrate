@@ -40,5 +40,10 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 	public function setChangeType($changeType) {
 		$this->setSessionData('dbmigrate:change:type', $changeType);
 	}
+
+	public function setChange($changeType, $changeId) {
+		$this->setChangeType($changeType);
+		$this->setChangeId($changeId);
+	}
 }
 ?>

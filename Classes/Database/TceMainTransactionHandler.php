@@ -62,8 +62,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChangeType('Command');
-			$this->user->setChangeId($this->getChangeId());
+			$this->user->setChange('Command', $this->getChangeId());
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -82,8 +81,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChangeType(NULL);
-			$this->user->setChangeId(NULL);
+			$this->user->setChange(NULL, NULL);
 
 			$this->db->store_lastBuiltQuery = FALSE;
 		}
@@ -102,8 +100,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChangeType('Data');
-			$this->user->setChangeId($this->getChangeId());
+			$this->user->setChange('Data', $this->getChangeId());
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -122,8 +119,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChangeType(NULL);
-			$this->user->setChangeId(NULL);
+			$this->user->setChange(NULL, NULL);
 
 			$this->db->store_lastBuiltQuery = FALSE;
 		}
