@@ -1,24 +1,20 @@
 <?php
 class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 
-	public function setUserConfiguration($key, $value) {
-		$GLOBALS['BE_USER']->uc[$key] = $value;
+	public function getSessionData($key, $default) {
+		$sessionData = $GLOBALS['BE_USER']->getSessionData($key);
 
-		$GLOBALS['BE_USER']->overrideUC();
-
-		$GLOBALS['BE_USER']->writeUC();
-	}
-
-	public function getUserConfiguration($key, $default) {
-		$userConfig = $GLOBALS['BE_USER']->uc;
-
-		if (TRUE === isset($userConfig[$key])) {
-			$configurationValue = $userConfig[$key];
+		if (TRUE === isset($sessionData)) {
+			$value = $sessionData;
 		} else {
-			$configurationValue = $default;
+			$value = $default;
 		}
 
-		return $configurationValue;
+		return $value;
+	}
+
+	public function setSessionData($key, $value) {
+		$GLOBALS['BE_USER']->setAndSaveSessionData($key, $value);
 	}
 
 	public function getUserName() {
@@ -27,6 +23,22 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 
 	public function getRealName() {
 		return $GLOBALS['BE_USER']->user['realName'];
+	}
+
+	public function getChangeId() {
+		return $this->getSessionData('dbmigrate:change:id', NULL);
+	}
+
+	public function setChangeId($changeId) {
+		$this->setSessionData('dbmigrate:change:id', $changeId);
+	}
+
+	public function getChangeType() {
+		return $this->getSessionData('dbmigrate:change:type', NULL);
+	}
+
+	public function setChangeType($changeType) {
+		$this->setSessionData('dbmigrate:change:type', $changeType);
 	}
 }
 ?>

@@ -50,8 +50,8 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 
 	protected function getChangeFileName() {
 		$date = date('Ymd');
-		$changeId = $this->backendUser->getUserConfiguration('dbmigrate:change:id', NULL);
-		$changeType = $this->backendUser->getUserConfiguration('dbmigrate:change:type', NULL);
+		$changeId = $this->backendUser->getChangeId();
+		$changeType = $this->backendUser->getChangeType();
 
 		if (TRUE === is_null($changeId) || TRUE === is_null($changeType)) {
 			throw new Exception('There is no change to log in the pipeline!');

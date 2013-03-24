@@ -62,8 +62,8 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setUserConfiguration('dbmigrate:change:type', 'Command');
-			$this->user->setUserConfiguration('dbmigrate:change:id', $this->getChangeId());
+			$this->user->setChangeType('Command');
+			$this->user->setChangeId($this->getChangeId());
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -82,8 +82,8 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setUserConfiguration('dbmigrate:change:type', NULL);
-			$this->user->setUserConfiguration('dbmigrate:change:id', NULL);
+			$this->user->setChangeType(NULL);
+			$this->user->setChangeId(NULL);
 
 			$this->db->store_lastBuiltQuery = FALSE;
 		}
@@ -102,8 +102,8 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setUserConfiguration('dbmigrate:change:type', 'Data');
-			$this->user->setUserConfiguration('dbmigrate:change:id', $this->getChangeId());
+			$this->user->setChangeType('Data');
+			$this->user->setChangeId($this->getChangeId());
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -122,8 +122,8 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setUserConfiguration('dbmigrate:change:type', NULL);
-			$this->user->setUserConfiguration('dbmigrate:change:id', NULL);
+			$this->user->setChangeType(NULL);
+			$this->user->setChangeId(NULL);
 
 			$this->db->store_lastBuiltQuery = FALSE;
 		}
