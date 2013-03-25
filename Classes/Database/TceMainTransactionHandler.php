@@ -56,7 +56,9 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChange('Command', $this->getChangeId());
+			$userName = $this->user->getUserName();
+			$changeId = $this->configuration->getNextFreeChangeIdForUser($userName);
+			$this->user->setChange('Command', $changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -94,7 +96,9 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChange('Data', $this->getChangeId());
+			$userName = $this->user->getUserName();
+			$changeId = $this->configuration->getNextFreeChangeIdForUser($userName);
+			$this->user->setChange('Data', $changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -117,36 +121,6 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 
 			$this->db->store_lastBuiltQuery = FALSE;
 		}
-	}
-
-	protected function getChangeId() {
-		$i = 0;
-
-		do {
-			$changeId = sprintf(Tx_Dbmigrate_Configuration::$changeIdFormat, $i);
-
-			$filePathCommand = $this->getChangeFilePath($changeId, 'Command');
-
-			$filePathData = $this->getChangeFilePath($changeId, 'Data');
-
-			$i++;
-		} while(file_exists($filePathCommand) || file_exists($filePathData));
-
-		return $changeId;
-	}
-
-	protected function getChangeFilePath($changeId, $changeType) {
-		$date = date('Ymd');
-		$username = $this->user->getUserName();
-
-		$replacePairs = array(
-			'%date%' => $date,
-			'%username%' => $username,
-			'%changeId%' => $changeId,
-			'%changeType%' => $changeType,
-		);
-
-		return $this->configuration->getChangeFilePath($replacePairs);
 	}
 }
 ?>

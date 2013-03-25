@@ -33,5 +33,31 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 
 		return t3lib_extMgm::extPath('dbmigrate', self::$changePath . $filePath);
 	}
+
+	public function getNextFreeChangeIdForUser($username) {
+		$replacePairs = array(
+			'%date%' => date('Ymd'),
+			'%username%' => $username,
+		);
+
+		$i = 0;
+
+		do {
+			$changeId = sprintf(self::$changeIdFormat, $i);
+
+			$replacePairs['%changeId%'] = $changeId;
+			$replacePairs['%changeType%'] = 'Command';
+
+			$filePathCommand = $this->getChangeFilePath($replacePairs);
+
+			$replacePairs['%changeType%'] = 'Data';
+
+			$filePathData = $this->getChangeFilePath($replacePairs);
+
+			$i++;
+		} while(file_exists($filePathCommand) || file_exists($filePathData));
+
+		return $changeId;
+	}
 }
 ?>
