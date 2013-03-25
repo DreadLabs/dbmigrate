@@ -3,40 +3,6 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
 
 class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
 
-	protected static $defaultTables = array(
-		'backend_layout',
-		'be_groups',
-		'be_users',
-		'fe_groups',
-		'fe_users',
-		'pages',
-		'pages_language_overlay',
-		'sys_action',
-		'sys_action_asgr_mm',
-		'sys_category',
-		'sys_category_record_mm',
-		'sys_collection',
-		'sys_collection_entries',
-		'sys_domain',
-		'sys_file',
-		'sys_filemounts',
-		'sys_file_collection',
-		'sys_file_reference',
-		'sys_history',
-		'sys_language',
-		'sys_news',
-		'sys_note',
-		'sys_refindex',
-		'sys_registry',
-		'sys_template',
-		'sys_workspace',
-		'sys_workspace_stage',
-		'tt_content',
-		'tx_rsaauth_keys',
-		'tx_rtehtmlarea_acronym',
-		'tx_scheduler_task',
-	);
-
 	protected static $repositoryInitCommand = 'git init %targetPath% 2>&1';
 
 	protected static $repositoryRemoteAddCommand = 'cd %targetPath% && git remote add %remoteName% %remotePath% 2>&1';
@@ -60,29 +26,13 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.init.field.default.label'),
-			'field' => '<textarea name="default" cols="60" rows="5">' . implode(' ', self::$defaultTables) . '</textarea>',
+			'field' => '<textarea name="default" cols="60" rows="5">' . implode(' ', Tx_Dbmigrate_Configuration::$defaultTables) . '</textarea>',
 		);
 
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.init.field.additional.label'),
-			'field' => '<textarea name="additional" cols="60" rows="5">' . implode(' ', $this->getAdditionalTables()) . '</textarea>',
+			'field' => '<textarea name="additional" cols="60" rows="5">' . implode(' ', $this->configuration->getAdditionalTables()) . '</textarea>',
 		);
-	}
-
-	protected function getAdditionalTables() {
-		$tables = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate']['loggingTables'];
-
-		$additionalTables = array();
-
-		foreach ($tables as $table => $tableConfiguration) {
-			if (TRUE === in_array($table, self::$defaultTables)) {
-				continue;
-			}
-
-			$additionalTables[] = $table;
-		}
-
-		return $additionalTables;
 	}
 
 	protected function getNormalizedProjectNameFromSysSitename($override = NULL) {

@@ -3,13 +3,23 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
 
 abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_Dbmigrate_Task_RepositoryManager_Action {
 
-	protected $options = array();
-
 	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
 
 	protected static $optionFieldTemplate = '<label><h3 class="uppercase">%label%</h3>%field%</label><br />';
 
 	protected static $formActionUrlTemplate = 'mod.php?M=user_task&SET[function]=sys_action.%taskClass%&select=%select%&submit=%submit%';
+
+	protected $options = array();
+
+	/**
+	 * 
+	 * @var Tx_Dbmigrate_Configuration
+	 */
+	protected $configuration = NULL;
+
+	public function injectConfiguration(Tx_Dbmigrate_Configuration $configuration) {
+		$this->configuration = $configuration;
+	}
 
 	public function getName() {
 		$parts = explode('_', get_class($this));

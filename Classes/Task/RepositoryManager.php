@@ -1,14 +1,21 @@
 <?php
 class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
-	protected $taskObject;
-
-	protected $actions = array();
 
 	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
 
 	protected static $actionPath = '/RepositoryManager/Action/';
 
 	protected static $actionItemTemplate = '<li><a href="%url%">%activeWrapStart%%actionName%%activeWrapEnd%<br /><em>%actionDescription%</em></a></li>';
+
+	protected $taskObject;
+
+	/**
+	 * 
+	 * @var Tx_Dbmigrate_Configuration
+	 */
+	protected $configuration = NULL;
+
+	protected $actions = array();
 
 	/**
 	 *
@@ -18,6 +25,8 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 	public function __construct(SC_mod_user_task_index $taskObject) {
 		$this->taskObject = $taskObject;
+
+		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
 
 		$this->getActions();
 	}
@@ -38,6 +47,7 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 			if ($isSelectedAction) {
 				$this->action = $_action;
+				$this->action->injectConfiguration($this->configuration);
 			}
 
 			$url = 'mod.php?M=user_task&SET[function]=sys_action.' . __CLASS__ . '&select=' . $actionNameNormalized;
