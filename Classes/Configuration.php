@@ -35,11 +35,11 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 		'tx_scheduler_task',
 	);
 
-	public static $changeFileNameFormat = '%date%-%username%-%changeId%-%changeType%.sql';
-
-	public static $changeIdFormat = '%04d';
-
 	public static $changePath = 'Resources/Public/Migrations/';
+
+	protected static $changeFileNameFormat = '%date%-%username%-%changeId%-%changeType%.sql';
+
+	protected static $changeIdFormat = '%04d';
 
 	protected $configuration = array();
 
