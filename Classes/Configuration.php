@@ -5,6 +5,8 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 
 	public static $changeFileNameFormat = '%date%-%username%-%changeId%-%changeType%.sql';
 
+	public static $changeIdFormat = '%04d';
+
 	public static $changePath = 'Resources/Public/Migrations/';
 
 	public function __construct() {

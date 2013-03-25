@@ -19,12 +19,6 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 */
 	protected $db = NULL;
 
-	protected $changeIdFormat = '%04d';
-
-	protected $changeScriptFilenamePattern = '%s-%s-%s.sql';
-
-	protected $changeScriptPath = 'Resources/Public/Migrations/';
-
 	public function injectConfiguration(Tx_Dbmigrate_Configuration $configuration = NULL) {
 		if (TRUE !== is_null($configuration)) {
 			$this->configuration = $configuration;
@@ -129,11 +123,11 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		$i = 0;
 
 		do {
-			$changeId = sprintf($this->changeIdFormat, $i);
+			$changeId = sprintf(Tx_Dbmigrate_Configuration::$changeIdFormat, $i);
 
-			$filePathCommand = $this->getChangeScriptPath($changeId, 'Command');
+			$filePathCommand = $this->getChangeFilePath($changeId, 'Command');
 
-			$filePathData = $this->getChangeScriptPath($changeId, 'Data');
+			$filePathData = $this->getChangeFilePath($changeId, 'Data');
 
 			$i++;
 		} while(file_exists($filePathCommand) || file_exists($filePathData));
@@ -141,11 +135,18 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		return $changeId;
 	}
 
-	protected function getChangeScriptPath($changeId, $changeType) {
+	protected function getChangeFilePath($changeId, $changeType) {
 		$date = date('Ymd');
+		$username = $this->user->getUserName();
 
-		$fileName = sprintf($this->changeScriptFilenamePattern, $date, $changeId, $changeType);
-		return t3lib_extMgm::extPath('dbmigrate', $this->changeScriptPath . $fileName);
+		$replacePairs = array(
+			'%date%' => $date,
+			'%username%' => $username,
+			'%changeId%' => $changeId,
+			'%changeType%' => $changeType,
+		);
+
+		return $this->configuration->getChangeFilePath($replacePairs);
 	}
 }
 ?>
