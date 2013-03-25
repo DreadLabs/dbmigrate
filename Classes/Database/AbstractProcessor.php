@@ -50,6 +50,7 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 
 	protected function getChangeFileName() {
 		$date = date('Ymd');
+		$username = $this->backendUser->getUserName();
 		$changeId = $this->backendUser->getChangeId();
 		$changeType = $this->backendUser->getChangeType();
 
@@ -57,8 +58,14 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 			throw new Exception('There is no change to log in the pipeline!');
 		}
 
-		$fileName = sprintf('%s-%s-%s.sql', $date, $changeId, $changeType);
-		$filePath = t3lib_extMgm::extPath('dbmigrate', 'Resources/Public/Migrations/' . $fileName);
+		$replacePairs = array(
+			'%date%' => $date,
+			'%username%' => $username,
+			'%changeId%' => $changeId,
+			'%changeType%' => $changeType,
+		);
+
+		$filePath = $this->configuration->getChangeFilePath($replacePairs);
 
 		return $filePath;
 	}

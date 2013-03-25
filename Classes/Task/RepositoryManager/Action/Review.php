@@ -3,8 +3,6 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
 
 class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
 
-	protected static $changesPath = 'Resources/Public/Migrations/';
-
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName% (%changeSize%)</option>';
 
 	public function checkAccess() {
@@ -29,7 +27,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 	protected function getChanges() {
 		$options = array();
 
-		$changes = t3lib_div::getFilesInDir(t3lib_extMgm::extPath('dbmigrate', self::$changesPath), 'sql', FALSE, 1, '');
+		$changes = t3lib_div::getFilesInDir(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath), 'sql', FALSE, 1, '');
 
 		foreach ($changes as $change) {
 			$changeSize = $this->getFileSize($change);
@@ -46,7 +44,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 	}
 
 	protected function getFileSize($change) {
-		$filePath = t3lib_extMgm::extPath('dbmigrate', self::$changesPath . '/' . $change);
+		$filePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '/' . $change);
 		$fileInformation = stat($filePath);
 
 		$fileSizeUnits = array(' Byte', ' KB', ' MB');
@@ -69,7 +67,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 		$content = '';
 
 		try {
-			$changePath = t3lib_extMgm::extPath('dbmigrate', self::$changesPath . '/' . t3lib_div::_GP('change'));
+			$changePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '/' . t3lib_div::_GP('change'));
 			$fh = @fopen($changePath, 'r');
 
 			if (FALSE === $fh) {

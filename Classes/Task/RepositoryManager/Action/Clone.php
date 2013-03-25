@@ -5,8 +5,6 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Clone extends Tx_Dbmigrate_Task
 
 	protected static $command = 'git clone %repository% %targetPath% 2>&1';
 
-	protected static $targetPath = 'Resources/Public/Migrations/';
-
 	public function checkAccess() {
 		return $GLOBALS['BE_USER']->isAdmin();
 	}
@@ -29,13 +27,13 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Clone extends Tx_Dbmigrate_Task
 	}
 
 	protected function cloneRepository() {
-		if (TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', self::$targetPath . '.git'))) {
+		if (TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '.git'))) {
 			throw new Exception('The repository is already cloned!');
 		}
 
 		$replacePairs = array(
 			'%repository%' => escapeshellcmd(t3lib_div::_GP('repository')),
-			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', self::$targetPath)),
+			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath)),
 		);
 
 		$command = strtr(self::$command, $replacePairs);

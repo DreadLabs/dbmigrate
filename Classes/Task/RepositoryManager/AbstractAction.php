@@ -9,6 +9,8 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 
 	protected static $optionFieldTemplate = '<label><h3 class="uppercase">%label%</h3>%field%</label><br />';
 
+	protected static $formActionUrlTemplate = 'mod.php?M=user_task&SET[function]=sys_action.%taskClass%&select=%select%&submit=%submit%';
+
 	public function getName() {
 		$parts = explode('_', get_class($this));
 
@@ -18,8 +20,7 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 	public final function renderForm() {
 		$this->getOptions();
 
-		$name = $this->getName();
-		$url = 'mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=' . $name . '&submit=' . $name;
+		$url = $this->getFormUrl();
 
 		$optionsForm = '<form action="' . $url . '" method="post">';
 
@@ -34,6 +35,20 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 		$optionsForm .= '</form>';
 
 		return $optionsForm;
+	}
+
+	protected function getFormUrl() {
+		$name = $this->getName();
+
+		$replacePairs = array(
+			'%taskClass%' => 'Tx_Dbmigrate_Task_RepositoryManager',
+			'%select%' => $name,
+			'%submit%' => $name,
+		);
+
+		$url = strtr(self::$formActionUrlTemplate, $replacePairs);
+
+		return $url;
 	}
 
 	protected function buildOptionField($label, $field) {

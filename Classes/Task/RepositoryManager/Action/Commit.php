@@ -3,8 +3,6 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
 
 class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
 
-	protected static $changesPath = 'Resources/Public/Migrations/';
-
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName%</option>';
 
 	protected static $commitCommand = 'cd %changesPath% && git add -f %changes% && git commit -m %commitMessage% --author=%author% %changes% && git push origin master 2>&1';
@@ -42,7 +40,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	public function getChanges() {
 		$options = array();
 
-		$changes = t3lib_div::getFilesInDir(t3lib_extMgm::extPath('dbmigrate', self::$changesPath), 'sql', FALSE, 1, '');
+		$changes = t3lib_div::getFilesInDir(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath), 'sql', FALSE, 1, '');
 
 		foreach ($changes as $change) {
 			$replacePairs = array(
@@ -71,7 +69,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 
 	protected function commit() {
 			$replacePairs = array(
-				'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', self::$changesPath),
+				'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath),
 				'%commitMessage%' => escapeshellarg(t3lib_div::_GP('subject') . LF . LF . t3lib_div::_GP('description')),
 				'%author%' => escapeshellarg($this->getAuthor()),
 				'%changes%' => escapeshellcmd(implode(' ', t3lib_div::_GP('change'))),
@@ -108,7 +106,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	protected function updateGitIgnore() {
-		$ignoreFilePath = t3lib_extMgm::extPath('dbmigrate', self::$changesPath . '.gitignore');
+		$ignoreFilePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '.gitignore');
 
 		$fh = @fopen($ignoreFilePath, 'a');
 
@@ -128,7 +126,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	protected function deleteCommittedChanges() {
-		$changesPath = t3lib_extMgm::extPath('dbmigrate', self::$changesPath);
+		$changesPath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath);
 
 		$changes = t3lib_div::_GP('change');
 
@@ -143,7 +141,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 		}
 
 		$replacePairs = array(
-			'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', self::$changesPath),
+			'%changesPath%' => $changesPath,
 			'%changes%' => implode(' ', t3lib_div::_GP('change')),
 		);
 
