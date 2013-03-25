@@ -1,6 +1,16 @@
 <?php
 class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
+	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
+
+	protected static $toolbarItemMenuStart = '<ul class="toolbar-item-menu" style="display: none;">';
+
+	protected static $toolbarItemMenuEnd = '</ul>';
+
+	protected static $toolbarItemMenuItemTemplate = '<li class="no-link">%icon% %title%</li>';
+
+	protected static $toolbarItemMenuItemLinkTemplate = '<li><a href="%href%">%icon% %title%</a></li>';
+
 	protected $EXTKEY = 'dbmigrate';
 
 	protected $toolbarItemMenu = array();
@@ -12,13 +22,11 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	protected $backendReference;
 
-	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
-
-	protected static $toolbarItemMenuStart = '<ul class="toolbar-item-menu" style="display: none;">';
-
-	protected static $toolbarItemMenuEnd = '</ul>';
-
-	protected static $toolbarItemMenuItemTemplate = '<li><a href="%href%">%icon% %title%</a></li>';
+	/**
+	 * 
+	 * @var Tx_Dbmigrate_Backend_User
+	 */
+	protected $user = NULL;
 
 	/**
 	 * constructor that receives a back reference to the backend
@@ -27,6 +35,8 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	public function __construct(TYPO3backend &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
+
+		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
 	}
 
 	/**
@@ -89,6 +99,9 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	protected function addToolbarItemMenu() {
 		$this->toolbarItemMenu[] = self::$toolbarItemMenuStart;
 
+		$informationalItems = $this->getInformationalMenuItems();
+		$this->addToolbarItemMenuItems($informationalItems);
+
 		$this->addToolbarItemMenuDivider();
 
 		$taskActionItems = $this->getTaskActionMenuItems();
@@ -97,16 +110,38 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$this->toolbarItemMenu[] = self::$toolbarItemMenuEnd;
 	}
 
+	protected function getInformationalMenuItems() {
+		$items = array();
+
+		$replacePairs = array(
+			'%count%' => '<span id="dbmigrate-count-uncommitedchanges">' . $this->user->getNumberOfUncommittedChanges() . '</span>',
+		);
+
+		$items[] = array(
+			'icon' => t3lib_iconWorks::getSpriteIcon('status-dialog-information'),
+			'title' => strtr($this->getTranslation('toolbar.item.menu.informational.uncommitedchanges'), $replacePairs),
+		);
+
+		return $items;
+	}
+
 	protected function addToolbarItemMenuItems($items) {
 		foreach ($items as $_ => $item) {
+			$itemHasLink = TRUE === isset($item['href']);
+
 			$replacePairs = array(
-				'%href%' => $item['href'],
+				'%href%' => $itemHasLink ? $item['href'] : '',
 				'%icon%' => $item['icon'],
 				'%title%' => $item['title'],
-				'%visible-if%' => $item['visible-if'],
 			);
 
-			$this->toolbarItemMenu[] = strtr(self::$toolbarItemMenuItemTemplate, $replacePairs);
+			$template = self::$toolbarItemMenuItemTemplate;
+
+			if ($itemHasLink) {
+				$template = self::$toolbarItemMenuItemLinkTemplate;
+			}
+
+			$this->toolbarItemMenu[] = strtr($template, $replacePairs);
 		}
 	}
 

@@ -45,5 +45,23 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 		$this->setChangeType($changeType);
 		$this->setChangeId($changeId);
 	}
+
+	public function getNumberOfUncommittedChanges() {
+		$fileNamePattern = '/^(.*)' . $this->getUserName() . '(.*)$/';
+		$filePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath);
+		$files = t3lib_div::getFilesInDir($filePath, 'sql', FALSE);
+
+		$count = 0;
+
+		foreach ($files as $file) {
+			if (0 === preg_match($fileNamePattern, $file)) {
+				continue;
+			}
+
+			$count++;
+		}
+
+		return $count;
+	}
 }
 ?>

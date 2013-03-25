@@ -1,6 +1,10 @@
 #tx-dbmigrate-menu {
 	width: 30px;
 }
+	#tx-dbmigrate-menu .no-link {
+		min-height: 19px;
+		padding: 1px 0 2px 3px;
+	}
 	#tx-dbmigrate-menu .divider {
 		border-top: 1px solid #abb2bc;
 		border-bottom: 1px solid transparent;

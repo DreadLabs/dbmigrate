@@ -7,8 +7,7 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="toolbar.item.title">Database change management</label>
-			<label index="toolbar.item.menu.control.enable_logging">enable logging</label>
-			<label index="toolbar.item.menu.control.disable_logging">disable logging</label>
+			<label index="toolbar.item.menu.informational.uncommitedchanges">%count% uncommited changes</label>
 			<label index="toolbar.item.menu.divider">Select action:</label>
 			<label index="toolbar.item.menu.action.commit">Commit</label>
 			<label index="toolbar.item.menu.action.pull">Pull</label>
@@ -44,8 +43,7 @@
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="toolbar.item.title">Datenbankänderungsmanagement</label>
-			<label index="toolbar.item.menu.control.enable_logging">Protokollierung aktivieren</label>
-			<label index="toolbar.item.menu.control.disable_logging">Protokollierung deaktivieren</label>
+			<label index="toolbar.item.menu.informational.uncommitedchanges">%count% nicht übertragene Änderungen</label>
 			<label index="toolbar.item.menu.divider">Aktion wählen:</label>
 			<label index="toolbar.item.menu.action.commit">Änderungen übertragen</label>
 			<label index="toolbar.item.menu.action.pull">Änderungen ausführen</label>
