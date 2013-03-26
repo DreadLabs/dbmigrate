@@ -32,6 +32,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 			$this->user = $user;
 		} else {
 			$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+			$this->user->injectConfiguration($this->configuration);
 		}
 	}
 
@@ -57,7 +58,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$userName = $this->user->getUserName();
-			$changeId = $this->configuration->getNextFreeChangeIdForUser($userName);
+			$changeId = $this->user->getNextFreeChangeId();
 			$this->user->setChange('Command', $changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;
@@ -97,7 +98,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$userName = $this->user->getUserName();
-			$changeId = $this->configuration->getNextFreeChangeIdForUser($userName);
+			$changeId = $this->user->getNextFreeChangeId();
 			$this->user->setChange('Data', $changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;

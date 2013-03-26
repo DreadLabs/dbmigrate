@@ -5,17 +5,13 @@
 		min-height: 19px;
 		padding: 1px 0 2px 3px;
 	}
-	#tx-dbmigrate-menu .divider {
-		border-top: 1px solid #abb2bc;
-		border-bottom: 1px solid transparent;
-	/*	border-bottom: 1px solid #2b2b2b;*/
-		height: 0px;
-		margin: 0;
-	}
-	#tx-dbmigrate-menu .toolbar-item-menu .header {
+	#tx-dbmigrate-menu .toolbar-item-menu .divider {
 		background-color: #dbdbdb;
+		border-top: 1px solid #abb2bc;
+		border-bottom: 1px solid #abb2bc;
+		margin: 0;
 		padding: 3px;
 	}
-	#tx-dbmigrate-menu .toolbar-item-menu .header:hover {
+	#tx-dbmigrate-menu .toolbar-item-menu .divider:hover {
 		background: #dbdbdb;
 	}

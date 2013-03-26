@@ -3,6 +3,8 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
 	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
 
+	protected static $toolbarItemTemplate = '<a href="#" class="toolbar-item">%icon%</a>';
+
 	protected static $toolbarItemMenuStart = '<ul class="toolbar-item-menu" style="display: none;">';
 
 	protected static $toolbarItemMenuEnd = '</ul>';
@@ -11,7 +13,9 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 
 	protected static $toolbarItemMenuItemLinkTemplate = '<li><a href="%href%">%icon% %title%</a></li>';
 
-	protected $EXTKEY = 'dbmigrate';
+	protected static $taskActionLinkTemplate = '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=%select%';
+
+	protected static $toolbarItemMenuItemDividerTemplate = '<li class="divider">%title%</li>';
 
 	protected $toolbarItemMenu = array();
 
@@ -23,7 +27,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	protected $backendReference;
 
 	/**
-	 * 
+	 *
 	 * @var Tx_Dbmigrate_Backend_User
 	 */
 	protected $user = NULL;
@@ -79,17 +83,20 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	protected function addJavascriptToBackend() {
 		$this->backendReference->addJavascriptFile(
-			t3lib_extMgm::extRelPath($this->EXTKEY) . 'Resources/Public/Javascript/tx_dbmigrate.js'
+			t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Javascript/tx_dbmigrate.js'
 		);
 	}
 
 	protected function addToolbarItem() {
-		$title = $this->getTranslation('toolbar.item.title');
 		$icon = t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database', array(
-			'title' => $title
+			'title' => $this->getTranslation('toolbar.item.title')
 		));
 
-		$this->toolbarItemMenu[] = '<a href="#" class="toolbar-item">' . $icon . '</a>';
+		$replacePairs = array(
+			'%icon%' => $icon,
+		);
+
+		$this->toolbarItemMenu[] = strtr(self::$toolbarItemTemplate, $replacePairs);
 	}
 
 	protected function getTranslation($key) {
@@ -146,39 +153,33 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	}
 
 	protected function addToolbarItemMenuDivider() {
-		$sectionSubtitle = $this->getTranslation('toolbar.item.menu.divider');
+		$replacePairs = array(
+			'%title%' => $this->getTranslation('toolbar.item.menu.divider'),
+		);
 
-		$divider = array();
-
-		$divider[] = '<li class="divider">&nbsp;</li>';
-		$divider[] = '<li class="header">' . $sectionSubtitle . '</li>';
-		$divider[] = '<li class="divider">&nbsp;</li>';
-
-		$this->toolbarItemMenu[] = implode(LF, $divider);
+		$this->toolbarItemMenu[] = strtr(self::$toolbarItemMenuItemDividerTemplate, $replacePairs);
 	}
 
 	protected function getTaskActionMenuItems() {
 		$items = array();
 
-		$items[] = array(
-			'href' => '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=commit',
-			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-commit'),
-			'title' => $this->getTranslation('toolbar.item.menu.action.commit'),
-		);
+		$items[] = $this->getTaskActionMenuItem('commit');
 
-		$items[] = array(
-			'href' => '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=pull',
-			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-pull'),
-			'title' => $this->getTranslation('toolbar.item.menu.action.pull'),
-		);
+		$items[] = $this->getTaskActionMenuItem('pull');
 
-		$items[] = array(
-			'href' => '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=review',
-			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-review'),
-			'title' => $this->getTranslation('toolbar.item.menu.action.review'),
-		);
+		$items[] = $this->getTaskActionMenuItem('review');
 
 		return $items;
+	}
+
+	protected function getTaskActionMenuItem($action) {
+		$item = array(
+			'href' => str_replace('%select%', $action, self::$taskActionLinkTemplate),
+			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-' . $action),
+			'title' => $this->getTranslation('toolbar.item.menu.action.' . $action),
+		);
+
+		return $item;
 	}
 }
 
