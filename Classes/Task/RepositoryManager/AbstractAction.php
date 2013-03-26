@@ -133,5 +133,17 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 	protected function getTranslation($key) {
 		return $GLOBALS['LANG']->sL(self::$translationCatalogue . ':' . $key, TRUE);
 	}
+
+	protected function raiseExceptionUnless($condition, $message) {
+		if (FALSE === $condition) {
+			throw new Exception($condition, 1364332797);
+		}
+	}
+
+	protected function raiseExceptionIf($condition, $message) {
+		if (TRUE === $condition) {
+			throw new Exception($message, 1364333374);
+		}
+	}
 }
 ?>

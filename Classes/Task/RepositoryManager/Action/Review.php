@@ -44,6 +44,8 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName% (%changeSize%)</option>';
 
+	protected static $processOutputTemplate = '<textarea cols="%width%" rows="%height%">%content%</textarea>';
+
 	public function checkAccess() {
 		return TRUE;
 	}
@@ -88,20 +90,22 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 			$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
 			$change = $changeRepository->findOneByName(t3lib_div::_GP('change'));
 
-			$this->failUnlessChangeIsDomainModelObjectInstance($change);
+			$this->raiseExceptionUnless($change instanceof Tx_Dbmigrate_Domain_Model_Change, 'The selected change is invalid/not existing!');
 
 			$content = $change->getContent();
+
+			$replacePairs = array(
+				'%width%' => t3lib_div::_GP('width'),
+				'%height%' => t3lib_div::_GP('height'),
+				'%content%' => htmlspecialchars($content),
+			);
+
+			$content = strtr(self::$processOutputTemplate, $replacePairs);
 		} catch (Exception $e) {
 			$content .= $e->getMessage();
 		}
 
-		return '<textarea cols="' . t3lib_div::_GP('width') . '" rows="' . t3lib_div::_GP('height') . '">' . htmlspecialchars($content) . '</textarea>';
-	}
-
-	protected function failUnlessChangeIsDomainModelObjectInstance($change) {
-		if (FALSE === $change instanceof Tx_Dbmigrate_Domain_Model_Change) {
-			throw new Exception('The selected change is invalid/non existing!', 1364332797);
-		}
+		return $content;
 	}
 }
 ?>

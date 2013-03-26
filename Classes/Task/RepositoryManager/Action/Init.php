@@ -158,15 +158,11 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	protected function createIgnoreFile() {
 		$ignoreFilePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.gitignore');
 
-		if (TRUE === file_exists($ignoreFilePath)) {
-			throw new Exception('.gitignore file already exists. Overwrite will not happen!');
-		}
+		$this->raiseExceptionIf(TRUE === file_exists($ignoreFilePath), '.gitignore file already exists. Overwrite will not happen!');
 
 		$fh = @fopen($ignoreFilePath, 'w');
 
-		if (FALSE === $fh) {
-			throw new Exception('The .gitignore file could not be written. Please check the access rights!');
-		}
+		$this->raiseExceptionIf(FALSE === $fh, 'The .gitignore file could not be written. Please check the access rights!');
 
 		fclose($fh);
 

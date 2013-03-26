@@ -151,9 +151,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 
 		$fh = @fopen($ignoreFilePath, 'a');
 
-		if (FALSE === $fh) {
-			throw new Exception('The .gitignore file couldn\'t be openend for writing.');
-		}
+		$this->raiseExceptionIf(FALSE === $fh, 'The .gitignore file couldn\'t be openend for writing.');
 
 		$changes = t3lib_div::_GP('change');
 
@@ -176,9 +174,10 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 
 			@unlink($changePath);
 
-			if (TRUE === file_exists($changePath)) {
-				throw new Exception(sprintf('Failure during removing a committed change %s. Please check directory permissions.', $change));
-			}
+			$this->raiseExceptionIf(
+				TRUE === file_exists($changePath),
+				sprintf('Failure during removing a committed change %s. Please check directory permissions.', $change)
+			);
 		}
 
 		$replacePairs = array(

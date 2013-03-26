@@ -66,9 +66,10 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Clone extends Tx_Dbmigrate_Task
 	}
 
 	protected function cloneRepository() {
-		if (TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git'))) {
-			throw new Exception('The repository is already cloned!');
-		}
+		$this->raiseExceptionIf(
+			TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git')),
+			'The repository is already cloned!'
+		);
 
 		$replacePairs = array(
 			'%repository%' => escapeshellcmd(t3lib_div::_GP('repository')),

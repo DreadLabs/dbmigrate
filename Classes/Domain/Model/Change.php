@@ -108,7 +108,8 @@ class Tx_Dbmigrate_Domain_Model_Change {
 		$fh = @fopen($changePath, 'r');
 
 		if (FALSE === $fh) {
-			throw new Exception(sprintf('The selected file %s could not been opened. Check directory permissions!', t3lib_div::_GP('change')), 1363976580);
+			$msg = sprintf('The selected file %s could not been opened. Check directory permissions!', $this->name);
+			throw new Exception($msg, 1363976580);
 		}
 
 		while (FALSE === feof($fh)) {
