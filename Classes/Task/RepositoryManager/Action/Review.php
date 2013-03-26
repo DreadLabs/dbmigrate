@@ -85,26 +85,23 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 		$content = '';
 
 		try {
-			// @TODO: implement Tx_Dbmigrate_Domain_Repository_ChangeRepository::findOneByName()
-			$changePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '/' . t3lib_div::_GP('change'));
+			$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+			$change = $changeRepository->findOneByName(t3lib_div::_GP('change'));
 
-			// @TODO: implement Tx_Dbmigrate_Domain_Model_Change::getContent()
-			$fh = @fopen($changePath, 'r');
+			$this->failUnlessChangeIsDomainModelObjectInstance($change);
 
-			if (FALSE === $fh) {
-				throw new Exception(sprintf('The selected file %s could not been opened. Check directory permissions!', t3lib_div::_GP('change')), 1363976580);
-			}
-
-			while (FALSE === feof($fh)) {
-				$content .= fread($fh, 8192);
-			}
-
-			@fclose ($fh);
+			$content = $change->getContent();
 		} catch (Exception $e) {
 			$content .= $e->getMessage();
 		}
 
 		return '<textarea cols="' . t3lib_div::_GP('width') . '" rows="' . t3lib_div::_GP('height') . '">' . htmlspecialchars($content) . '</textarea>';
+	}
+
+	protected function failUnlessChangeIsDomainModelObjectInstance($change) {
+		if (FALSE === $change instanceof Tx_Dbmigrate_Domain_Model_Change) {
+			throw new Exception('The selected change is invalid/non existing!', 1364332797);
+		}
 	}
 }
 ?>

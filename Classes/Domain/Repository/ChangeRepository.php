@@ -85,7 +85,7 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 		);
 	}
 
-	public function getActiveChangeStorageLocationOfUser() {
+	protected function getActiveChangeStorageLocationOfUser() {
 		if (FALSE === $this->user->hasActiveChange()) {
 			throw new Exception('The user has no active change!', 1364321013);
 		}
@@ -176,6 +176,19 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 		$filePath = strtr(Tx_Dbmigrate_Domain_Model_Change::$nameFormat, $replacePairs);
 
 		return t3lib_extMgm::extPath('dbmigrate', self::$storageLocation . $filePath);
+	}
+
+	public function findOneByName($name) {
+		$change = NULL;
+
+		$filePath = t3lib_extMgm::extPath('dbmigrate', self::$storageLocation . '/' . $name);
+
+		if (TRUE === file_exists($filePath)) {
+			$change = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Model_Change');
+			$change->setName($name);
+		}
+
+		return $change;
 	}
 }
 ?>

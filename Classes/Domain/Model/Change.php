@@ -99,5 +99,25 @@ class Tx_Dbmigrate_Domain_Model_Change {
 
 		return round($fileSize, 1) . $fileSizeUnit;
 	}
+
+	public function getContent() {
+		$content = '';
+
+		$changePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '/' . $this->name);
+
+		$fh = @fopen($changePath, 'r');
+
+		if (FALSE === $fh) {
+			throw new Exception(sprintf('The selected file %s could not been opened. Check directory permissions!', t3lib_div::_GP('change')), 1363976580);
+		}
+
+		while (FALSE === feof($fh)) {
+			$content .= fread($fh, 8192);
+		}
+
+		@fclose ($fh);
+
+		return $content;
+	}
 }
 ?>
