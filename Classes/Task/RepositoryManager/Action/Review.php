@@ -66,14 +66,13 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 	protected function getChanges() {
 		$options = array();
 
-		$changes = t3lib_div::getFilesInDir(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath), 'sql', FALSE, 1, '');
+		$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$changes = $changeRepository->findAll();
 
 		foreach ($changes as $change) {
-			$changeSize = $this->getFileSize($change);
-
 			$replacePairs = array(
-				'%changeName%' => $change,
-				'%changeSize%' => $changeSize,
+				'%changeName%' => $change->getName(),
+				'%changeSize%' => $change->getSize(),
 			);
 
 			$options[] = strtr(self::$changeOptionTemplate, $replacePairs);
@@ -82,31 +81,14 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 		return implode(LF, $options);
 	}
 
-	protected function getFileSize($change) {
-		$filePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '/' . $change);
-		$fileInformation = stat($filePath);
-
-		$fileSizeUnits = array(' Byte', ' KB', ' MB');
-		$maxSize = count($fileSizeUnits);
-		$i = 0;
-
-		$fileSize = $fileInformation['size'];
-		$fileSizeUnit = $fileSizeUnits[$i];
-
-		while ($fileSize > 1024 || $i === $maxSize) {
-			$i = $i + 1;
-			$fileSizeUnit = $fileSizeUnits[$i];
-			$fileSize = $fileSize / 1024;
-		}
-
-		return round($fileSize, 1) . $fileSizeUnit;
-	}
-
 	public function process() {
 		$content = '';
 
 		try {
-			$changePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '/' . t3lib_div::_GP('change'));
+			// @TODO: implement Tx_Dbmigrate_Domain_Repository_ChangeRepository::findOneByName()
+			$changePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '/' . t3lib_div::_GP('change'));
+
+			// @TODO: implement Tx_Dbmigrate_Domain_Model_Change::getContent()
 			$fh = @fopen($changePath, 'r');
 
 			if (FALSE === $fh) {

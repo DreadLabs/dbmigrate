@@ -72,6 +72,12 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	protected $user = NULL;
 
 	/**
+	 * 
+	 * @var Tx_Dbmigrate_Domain_Repository_ChangeRepository
+	 */
+	protected $changeRepository = NULL;
+
+	/**
 	 * constructor that receives a back reference to the backend
 	 *
 	 * @param	TYPO3backend	TYPO3 backend object reference
@@ -80,6 +86,9 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$this->backendReference = $backendReference;
 
 		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+
+		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$this->changeRepository->injectUser($this->user);
 	}
 
 	/**
@@ -160,7 +169,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		$items = array();
 
 		$replacePairs = array(
-			'%count%' => '<span id="dbmigrate-count-uncommitedchanges">' . $this->user->getNumberOfUncommittedChanges() . '</span>',
+			'%count%' => '<span id="dbmigrate-count-uncommitedchanges">' . $this->changeRepository->countAllByUser() . '</span>',
 		);
 
 		$items[] = array(

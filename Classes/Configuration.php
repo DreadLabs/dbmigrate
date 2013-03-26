@@ -74,12 +74,6 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 		'tx_scheduler_task',
 	);
 
-	public static $changePath = 'Resources/Public/Migrations/';
-
-	public static $changeIdFormat = '%04d';
-
-	protected static $changeFileNameFormat = '%date%-%username%-%changeId%-%changeType%.sql';
-
 	protected $configuration = array();
 
 	public function __construct() {
@@ -115,14 +109,6 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 		}
 
 		return $additionalTables;
-	}
-
-	public function getChangeFilePath($replacePairs) {
-		$replacePairs['%date%'] = date('Ymd');
-
-		$filePath = strtr(self::$changeFileNameFormat, $replacePairs);
-
-		return t3lib_extMgm::extPath('dbmigrate', self::$changePath . $filePath);
 	}
 }
 ?>

@@ -43,6 +43,7 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
 class Tx_Dbmigrate_Task_RepositoryManager_Action_Pull extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
 
 	public function checkAccess() {
+		// @TODO: Tx_Dbmigrate_Backend_User instance!!!
 		return $GLOBALS['BE_USER']->isAdmin();
 	}
 

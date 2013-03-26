@@ -49,6 +49,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	protected static $dumpCommand = 'mysqldump -u%user% -h%host% -p%password% -c --no-create-db %database% %default% %additional% > %targetPath%%projectName%.sql';
 
 	public function checkAccess() {
+		// @TODO: Tx_Dbmigrate_Backend_User instance!!!
 		return $GLOBALS['BE_USER']->isAdmin();
 	}
 
@@ -102,7 +103,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	}
 
 	protected function createRepository() {
-		if (TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '.git'))) {
+		if (TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git'))) {
 			throw new Exception('The repository is already initialized!');
 		}
 
@@ -115,7 +116,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 	protected function initRepository() {
 		$replacePairs = array(
-			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath)),
+			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
 		);
 
 		$command = strtr(self::$repositoryInitCommand, $replacePairs);
@@ -125,7 +126,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 	protected function addRepositoryRemote() {
 		$replacePairs = array(
-			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath)),
+			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
 			'%remoteName%' => 'origin',
 			'%remotePath%' => escapeshellcmd(t3lib_div::_GP('repository')),
 		);
@@ -143,7 +144,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 			'%database%' => TYPO3_db,
 			'%default%' =>  escapeshellcmd(t3lib_div::_GP('default')),
 			'%additional%' => escapeshellcmd(t3lib_div::_GP('additional')),
-			'%targetPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath),
+			'%targetPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation),
 			'%projectName%' => escapeshellcmd($this->getNormalizedProjectNameFromSysSitename(t3lib_div::_GP('projectName'))),
 		);
 
@@ -155,7 +156,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	}
 
 	protected function createIgnoreFile() {
-		$ignoreFilePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Configuration::$changePath . '.gitignore');
+		$ignoreFilePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.gitignore');
 
 		if (TRUE === file_exists($ignoreFilePath)) {
 			throw new Exception('.gitignore file already exists. Overwrite will not happen!');

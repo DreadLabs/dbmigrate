@@ -53,6 +53,12 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	protected $user = NULL;
 
 	/**
+	 * 
+	 * @var Tx_Dbmigrate_Domain_Repository_ChangeRepository
+	 */
+	protected $changeRepository = NULL;
+
+	/**
 	 *
 	 * @var t3lib_db
 	 */
@@ -75,6 +81,15 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 		}
 	}
 
+	public function injectChangeRepository(Tx_Dbmigrate_Domain_Repository_ChangeRepository $changeRepository = NULL) {
+		if (TRUE !== is_null($changeRepository)) {
+			$this->changeRepository = $changeRepository;
+		} else {
+			$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+			$this->changeRepository->injectUser($this->user);
+		}
+	}
+
 	public function injectDatabase(t3lib_db $db = NULL) {
 		if (TRUE !== is_null($db)) {
 			$this->db = $db;
@@ -93,11 +108,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 
 		$this->injectUser();
 
+		$this->injectChangeRepository();
+
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$userName = $this->user->getUserName();
-			$changeId = $this->user->getNextFreeChangeId();
+			$changeId = $this->changeRepository->findNextFreeChangeOfUser();
 			$this->user->setChange('Command', $changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;
@@ -133,11 +150,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 
 		$this->injectUser();
 
+		$this->injectChangeRepository();
+
 		$this->injectDatabase();
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$userName = $this->user->getUserName();
-			$changeId = $this->user->getNextFreeChangeId();
+			$changeId = $this->changeRepository->findNextFreeChangeOfUser();
 			$this->user->setChange('Data', $changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;
