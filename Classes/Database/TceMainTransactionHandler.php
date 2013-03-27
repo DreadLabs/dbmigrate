@@ -53,7 +53,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	protected $user = NULL;
 
 	/**
-	 * 
+	 *
 	 * @var Tx_Dbmigrate_Domain_Repository_ChangeRepository
 	 */
 	protected $changeRepository = NULL;
@@ -64,38 +64,32 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 */
 	protected $db = NULL;
 
-	public function injectConfiguration(Tx_Dbmigrate_Configuration $configuration = NULL) {
-		if (TRUE !== is_null($configuration)) {
-			$this->configuration = $configuration;
-		} else {
-			$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
-		}
+	public function initialize() {
+		$this->initializeConfiguration();
+
+		$this->initializeUser();
+
+		$this->initializeChangeRepository();
+
+		$this->initializeDatabase();
 	}
 
-	public function injectUser(Tx_Dbmigrate_Backend_User $user = NULL) {
-		if (TRUE !== is_null($user)) {
-			$this->user = $user;
-		} else {
-			$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
-			$this->user->injectConfiguration($this->configuration);
-		}
+	public function initializeConfiguration() {
+		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
 	}
 
-	public function injectChangeRepository(Tx_Dbmigrate_Domain_Repository_ChangeRepository $changeRepository = NULL) {
-		if (TRUE !== is_null($changeRepository)) {
-			$this->changeRepository = $changeRepository;
-		} else {
-			$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
-			$this->changeRepository->injectUser($this->user);
-		}
+	public function initializeUser() {
+		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		$this->user->injectConfiguration($this->configuration);
 	}
 
-	public function injectDatabase(t3lib_db $db = NULL) {
-		if (TRUE !== is_null($db)) {
-			$this->db = $db;
-		} else {
-			$this->db = $GLOBALS['TYPO3_DB'];
-		}
+	public function initializeChangeRepository() {
+		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$this->changeRepository->injectUser($this->user);
+	}
+
+	public function initializeDatabase() {
+		$this->db = $GLOBALS['TYPO3_DB'];
 	}
 
 	/**
@@ -104,13 +98,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processCmdmap_beforeStart(t3lib_TCEmain $tceMain) {
-		$this->injectConfiguration();
-
-		$this->injectUser();
-
-		$this->injectChangeRepository();
-
-		$this->injectDatabase();
+		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$userName = $this->user->getUserName();
@@ -127,11 +115,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processCmdmap_afterFinish(t3lib_TCEmain $tceMain) {
-		$this->injectConfiguration();
-
-		$this->injectUser();
-
-		$this->injectDatabase();
+		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$this->user->setChange(NULL, NULL);
@@ -146,13 +130,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processDatamap_beforeStart(t3lib_TCEmain $tceMain) {
-		$this->injectConfiguration();
-
-		$this->injectUser();
-
-		$this->injectChangeRepository();
-
-		$this->injectDatabase();
+		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$userName = $this->user->getUserName();
@@ -169,11 +147,7 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	 * @param t3lib_TCEmain $tceMain
 	 */
 	public function processDatamap_afterAllOperations(t3lib_TCEmain $tceMain) {
-		$this->injectConfiguration();
-
-		$this->injectUser();
-
-		$this->injectDatabase();
+		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
 			$this->user->setChange(NULL, NULL);

@@ -46,10 +46,16 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 	protected static $actionItemTemplate = '<li><a href="%url%">%activeWrapStart%%actionName%%activeWrapEnd%<br /><em>%actionDescription%</em></a></li>';
 
+	protected static $overviewTemplate = '<p>%title%</p>%actions%';
+
+	protected static $actionListTemplate = '<ul>%list%</ul>';
+
+	protected static $taskHeaderTemplate = '<h2 class="uppercase">%title%</h2>';
+
 	protected $taskObject;
 
 	/**
-	 * 
+	 *
 	 * @var Tx_Dbmigrate_Configuration
 	 */
 	protected $configuration = NULL;
@@ -65,9 +71,17 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 	public function __construct(SC_mod_user_task_index $taskObject) {
 		$this->taskObject = $taskObject;
 
-		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+		$this->initialize();
+	}
+
+	public function initialize() {
+		$this->initializeConfiguration();
 
 		$this->getActions();
+	}
+
+	protected function initializeConfiguration() {
+		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
 	}
 
 	protected function getActions() {
@@ -102,39 +116,62 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 	}
 
 	public function getOverview() {
-		$content = '<p>' . $this->getTranslation('task.overview') . '</p>';
+		$replacePairs = array(
+			'%title%' => $this->getTranslation('task.overview'),
+			'%actions%' => $this->renderActions(),
+		);
 
-		$content .= $this->renderActions();
+		$content = strtr(self::$overviewTemplate, $replacePairs);
 
 		return $content;
 	}
 
 	protected function renderActions() {
-		$list = '<ul>';
+		$list = '';
 
 		foreach ($this->actions as $action) {
 			$list .= strtr(self::$actionItemTemplate, $action);
 		}
 
-		$list .= '</ul>';
+		$replacePairs = array(
+			'%list%' => $list,
+		);
 
-		return $list;
+		$content = strtr(self::$actionListTemplate, $replacePairs);
+
+		return $content;
 	}
 
 	public function getTask() {
 		$content = '<br />';
 
 		if (NULL !== t3lib_div::_GP('select') && NULL === t3lib_div::_GP('submit')) {
-			$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.configure') . ' ' . $this->action->getName() . '</h2>';
+			$content .= $this->getTaskHeader('task.header.configure');
 			$content .= $this->action->renderForm();
 		}
 
 		if (NULL !== t3lib_div::_GP('submit')) {
-			$content .= '<h2 class="uppercase">' . $this->getTranslation('task.header.processing') . ' ' . $this->action->getName() . '...</h2>';
+			$content .= $this->getTaskHeader('task.header.processing');
 			$content .= $this->action->process();
 		}
 
 		return $content;
+	}
+
+	protected function getTaskHeader($translationKey) {
+		$replacePairs = array(
+			'%title%' => $this->getTaskHeaderTitle($translationKey),
+		);
+
+		return strtr(self::$taskHeaderTemplate, $replacePairs);
+	}
+
+	protected function getTaskHeaderTitle($translationKey) {
+		$replacePairs = array(
+			'%action%' => $this->action->getName(),
+		);
+
+		return strtr($this->getTranslation($translationKey), $replacePairs);
 	}
 
 	protected function getTranslation($key) {

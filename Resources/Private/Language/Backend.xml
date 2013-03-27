@@ -20,8 +20,8 @@
 			<label index="task.title">Database change management.</label>
 			<label index="task.overview">Repository maintenance tasks.</label>
 			<label index="task.header.select">Select action</label>
-			<label index="task.header.configure">Configure</label>
-			<label index="task.header.processing">Processing</label>
+			<label index="task.header.configure">Configure %action%</label>
+			<label index="task.header.processing">Processing %action%...</label>
 			<label index="task.action.submit">Execute</label>
 			<label index="task.action.clone.description">Clone an existing repository for a slave TYPO3 instance</label>
 			<label index="task.action.clone.field.repository.label">URL/Path of git repository</label>
@@ -56,8 +56,8 @@
 			<label index="task.title">Datenbankänderungsmanagement.</label>
 			<label index="task.overview">Pflege des Datendepots.</label>
 			<label index="task.header.select">Aktion auswählen</label>
-			<label index="task.header.configure">Einstellungen</label>
-			<label index="task.header.processing">Ausführen von</label>
+			<label index="task.header.configure">Einstellungen für %action%</label>
+			<label index="task.header.processing">Ausführen von %action%...</label>
 			<label index="task.action.submit">Ausführen</label>
 			<label index="task.action.clone.description">Klont ein existierendes Datendepot für eine TYPO3 Trabanteninstallation</label>
 			<label index="task.action.clone.field.repository.label">URL/Pfad zum Git Datendepot</label>

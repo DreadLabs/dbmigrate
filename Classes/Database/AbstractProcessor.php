@@ -54,25 +54,37 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 	 */
 	protected $user = NULL;
 
-	protected function init() {
+	public function initialize() {
 		if (FALSE === $this->isInitialized) {
-			$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+			$this->initializeConfiguration();
 
-			$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
-			$this->user->injectConfiguration($this->configuration);
+			$this->initializeUser();
 
-			$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
-			$this->changeRepository->injectUser($this->user);
+			$this->initializeChangeRepository();
 
 			$this->isInitialized = TRUE;
 		}
+	}
+
+	protected function initializeConfiguration() {
+		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+	}
+
+	protected function initializeUser() {
+		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		$this->user->injectConfiguration($this->configuration);
+	}
+
+	protected function initializeChangeRepository() {
+		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$this->changeRepository->injectUser($this->user);
 	}
 
 	protected function isMonitoringEnabled() {
 		return $this->configuration->isMonitoringEnabled();
 	}
 
-	protected function logQueryForTable($table, $query) {
+	protected function storeChange($table, $query) {
 		try {
 			$this->raiseExceptionUnlessTableIsActive($table);
 

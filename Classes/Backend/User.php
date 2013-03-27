@@ -40,8 +40,10 @@
  */
 class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 
+	protected static $authorTemplate = '%name% <%email%>';
+
 	/**
-	 * 
+	 *
 	 * @var Tx_Dbmigrate_Configuration
 	 */
 	protected $configuration = NULL;
@@ -100,6 +102,29 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 		$hasChangeType = FALSE === is_null($this->getChangeType());
 
 		return $hasChangeId && $hasChangeType;
+	}
+
+	public function getAuthorRFC2822Formatted() {
+		$user = $GLOBALS['BE_USER']->user;
+
+		$name = $user['username'];
+
+		if ('' !== $user['realName']) {
+			$name = $user['realName'];
+		}
+
+		$email = sprintf('%s@%s', $user['username'], t3lib_div::getIndpEnv('HTTP_HOST'));
+
+		if ('' !== $user['email']) {
+			$email = $user['email'];
+		}
+
+		$replacePairs = array(
+			'%name%' => $name,
+			'%email%' => $email,
+		);
+
+		return strtr(self::$authorTemplate, $replacePairs);
 	}
 }
 ?>

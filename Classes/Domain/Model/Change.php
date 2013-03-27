@@ -44,8 +44,10 @@ class Tx_Dbmigrate_Domain_Model_Change {
 
 	public static $nameFormat = '%date%-%username%-%changeId%-%changeType%.sql';
 
+	protected static $fileSizeUnits = array(' Byte', ' KB', ' MB');
+
 	/**
-	 * 
+	 *
 	 * @var Tx_Dbmigrate_Backend_User
 	 */
 	protected $user = NULL;
@@ -53,6 +55,8 @@ class Tx_Dbmigrate_Domain_Model_Change {
 	protected $id = '';
 
 	protected $name = '';
+
+	protected $storageLocation = '';
 
 	public function injectUser(Tx_Dbmigrate_Backend_User $user) {
 		$this->user = $user;
@@ -74,6 +78,14 @@ class Tx_Dbmigrate_Domain_Model_Change {
 		return $this->name;
 	}
 
+	public function setStorageLocation($storageLocation) {
+		$this->storageLocation = $storageLocation;
+	}
+
+	public function getStorageLocation() {
+		return $this->storageLocation;
+	}
+
 	public function belongsToUser() {
 		$fileNamePattern = '/^(.*)' . $this->user->getUserName() . '(.*)$/';
 
@@ -81,19 +93,17 @@ class Tx_Dbmigrate_Domain_Model_Change {
 	}
 
 	public function getSize() {
-		$filePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '/' . $this->name);
-		$fileInformation = stat($filePath);
+		$fileInformation = stat($this->storageLocation);
 
-		$fileSizeUnits = array(' Byte', ' KB', ' MB');
-		$maxSize = count($fileSizeUnits);
+		$maxSize = count(self::$fileSizeUnits);
 		$i = 0;
 
 		$fileSize = $fileInformation['size'];
-		$fileSizeUnit = $fileSizeUnits[$i];
+		$fileSizeUnit = self::$fileSizeUnits[$i];
 
 		while ($fileSize > 1024 || $i === $maxSize) {
 			$i = $i + 1;
-			$fileSizeUnit = $fileSizeUnits[$i];
+			$fileSizeUnit = self::$fileSizeUnits[$i];
 			$fileSize = $fileSize / 1024;
 		}
 
@@ -103,12 +113,10 @@ class Tx_Dbmigrate_Domain_Model_Change {
 	public function getContent() {
 		$content = '';
 
-		$changePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '/' . $this->name);
-
-		$fh = @fopen($changePath, 'r');
+		$fh = @fopen($this->storageLocation, 'r');
 
 		if (FALSE === $fh) {
-			$msg = sprintf('The selected file %s could not been opened. Check directory permissions!', $this->name);
+			$msg = sprintf('The selected file %s could not be opened. Check directory permissions!', $this->name);
 			throw new Exception($msg, 1363976580);
 		}
 

@@ -43,13 +43,13 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 	public static $storageLocation = 'Resources/Public/Migrations/';
 
 	/**
-	 * 
+	 *
 	 * @var Tx_Dbmigrate_Backend_User
 	 */
 	protected $user = NULL;
 
 	/**
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $userChanges = array();
@@ -114,7 +114,10 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 
 		foreach ($files as $file) {
 			$change = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Model_Change');
+
 			$change->setName($file);
+			$change->setStorageLocation($filePath . $file);
+
 			$changes[] = $change;
 		}
 
@@ -181,14 +184,32 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 	public function findOneByName($name) {
 		$change = NULL;
 
-		$filePath = t3lib_extMgm::extPath('dbmigrate', self::$storageLocation . '/' . $name);
+		$filePath = t3lib_extMgm::extPath('dbmigrate', self::$storageLocation . $name);
 
 		if (TRUE === file_exists($filePath)) {
 			$change = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Model_Change');
+
 			$change->setName($name);
+			$change->setStorageLocation($filePath);
 		}
 
 		return $change;
+	}
+
+	public function removeOneByName($name) {
+		$change = $this->findOneByName($name);
+
+		if (FALSE === $change instanceof Tx_Dbmigrate_Domain_Model_Change) {
+			$msg = sprintf('The selected change %s could not be found!', $name);
+			throw new Exception($msg, 1364381331);
+		}
+
+		@unlink($change->getStorageLocation());
+
+		if (TRUE === file_exists($changePath)) {
+			$msg = sprintf('Failure during removing a committed change %s. Please check directory permissions!', $name);
+			throw new Exception($msg, 1364381244);
+		}
 	}
 }
 ?>

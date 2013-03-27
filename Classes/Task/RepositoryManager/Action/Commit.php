@@ -48,16 +48,16 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 
 	protected static $updateIndexCommand = 'cd %changesPath% && git update-index --assume-unchanged %changes% 2>&1';
 
-	protected static $authorTemplate = '%name% <%email%>';
-
 	public function checkAccess() {
 		return TRUE;
 	}
 
 	public function getOptions() {
+		$user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.commit.field.author.label'),
-			'field' => '<input name="author" value="' . $this->getAuthor() . '" size="60" disabled="disabled" />',
+			'field' => '<input name="author" value="' . $user->getAuthorRFC2822Formatted() . '" size="60" disabled="disabled" />',
 		);
 
 		$this->options[] = array(
@@ -108,42 +108,20 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	protected function commit() {
-			$replacePairs = array(
-				'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation),
-				'%commitMessage%' => escapeshellarg(t3lib_div::_GP('subject') . LF . LF . t3lib_div::_GP('description')),
-				'%author%' => escapeshellarg($this->getAuthor()),
-				'%changes%' => escapeshellcmd(implode(' ', t3lib_div::_GP('change'))),
-			);
-
-			$command = strtr(self::$commitCommand, $replacePairs);
-
-			$this->executeCommand($command, 'The committing failed. Please see the following output for details:');
-
-			return 'Successfully committed the selected changes into the repository.';
-	}
-
-	// @TODO: inject Tx_Dbmigrate_Backend_User instance and handle this there!!!
-	protected function getAuthor() {
-		$user = $GLOBALS['BE_USER']->user;
-
-		$name = $user['username'];
-
-		if ('' !== $user['realName']) {
-			$name = $user['realName'];
-		}
-
-		$email = sprintf('%s@%s', $user['username'], t3lib_div::getIndpEnv('HTTP_HOST'));
-
-		if ('' !== $user['email']) {
-			$email = $user['email'];
-		}
+		$user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
 
 		$replacePairs = array(
-			'%name%' => $name,
-			'%email%' => $email,
+			'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation),
+			'%commitMessage%' => escapeshellarg(t3lib_div::_GP('subject') . LF . LF . t3lib_div::_GP('description')),
+			'%author%' => escapeshellarg($user->getAuthorRFC2822Formatted()),
+			'%changes%' => escapeshellcmd(implode(' ', t3lib_div::_GP('change'))),
 		);
 
-		return strtr(self::$authorTemplate, $replacePairs);
+		$command = strtr(self::$commitCommand, $replacePairs);
+
+		$this->executeCommand($command, 'The committing failed. Please see the following output for details:');
+
+		return 'Successfully committed the selected changes into the repository.';
 	}
 
 	protected function updateGitIgnore() {
@@ -165,23 +143,16 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	protected function deleteCommittedChanges() {
-		$changesPath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation);
+		$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
 
 		$changes = t3lib_div::_GP('change');
 
 		foreach ($changes as $change) {
-			$changePath = $changesPath . $change;
-
-			@unlink($changePath);
-
-			$this->raiseExceptionIf(
-				TRUE === file_exists($changePath),
-				sprintf('Failure during removing a committed change %s. Please check directory permissions.', $change)
-			);
+			$changeRepository->removeOneByName($change);
 		}
 
 		$replacePairs = array(
-			'%changesPath%' => $changesPath,
+			'%changesPath%' => Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation,
 			'%changes%' => implode(' ', t3lib_div::_GP('change')),
 		);
 

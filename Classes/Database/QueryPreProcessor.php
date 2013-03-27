@@ -50,7 +50,7 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @return void
 	 */
 	public function INSERTquery_preProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
 	}
@@ -68,7 +68,7 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @return void
 	 */
 	public function INSERTmultipleRows_preProcessAction(&$table, array &$fields, array &$rows, &$noQuoteFields, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
 	}
@@ -84,7 +84,7 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @return void
 	 */
 	public function UPDATEquery_preProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
 	}
@@ -98,7 +98,7 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @return void
 	 */
 	public function DELETEquery_preProcessAction(&$table, &$where, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
 	}
@@ -111,7 +111,7 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @return void
 	 */
 	public function TRUNCATEquery_preProcessAction(&$table, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
 	}

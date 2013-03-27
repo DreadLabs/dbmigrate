@@ -50,7 +50,7 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @return void
 	 */
 	public function exec_INSERTquery_postProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
@@ -70,12 +70,12 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @return void
 	 */
 	public function exec_INSERTmultipleRows_postProcessAction(&$table, array &$fields, array &$rows, &$noQuoteFields, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable($table, $lastQuery);
+			$this->storeChange($table, $lastQuery);
 		}
 	}
 
@@ -90,12 +90,12 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @return void
 	 */
 	public function exec_UPDATEquery_postProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable($table, $lastQuery);
+			$this->storeChange($table, $lastQuery);
 		}
 	}
 
@@ -108,12 +108,12 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @return void
 	 */
 	public function exec_DELETEquery_postProcessAction(&$table, &$where, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable($table, $lastQuery);
+			$this->storeChange($table, $lastQuery);
 		}
 	}
 
@@ -125,12 +125,12 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @return void
 	 */
 	public function exec_TRUNCATEquery_postProcessAction(&$table, t3lib_DB $parentObject) {
-		$this->init();
+		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable($table, $lastQuery);
+			$this->storeChange($table, $lastQuery);
 		}
 	}
 }
