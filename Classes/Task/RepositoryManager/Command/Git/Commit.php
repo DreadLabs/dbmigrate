@@ -26,30 +26,27 @@
  ***************************************************************/
 
 /**
- * ActionInterface.php
+ * Commit.php
  *
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Handles the commit command for data repository handling.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
+
+require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractCommand.php');
 
 /**
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Handles the commit command for data repository handling.
+ *
+ * Note that this command is a "multi-command" as it cd's into the change directory,
+ * performs a `git add - <changes>` and at least a `git commit` call
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-interface Tx_Dbmigrate_Task_RepositoryManager_Action {
+class Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Commit extends Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand {
 
-// 	public function initialize();
+	protected $commandTemplate = 'cd %changesPath% && git add -f %changes% && git commit -m %commitMessage% --author=%author% %changes% && git push origin master 2>&1';
 
-	public function checkAccess();
-
-	public function getName();
-
-	public function getOptions();
-
-	public function renderForm();
-
-	public function process();
+	protected $errorPreface = 'The committing failed. Please see the following output for details:';
 }
 ?>

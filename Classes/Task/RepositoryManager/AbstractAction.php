@@ -51,7 +51,7 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 	protected $options = array();
 
 	/**
-	 * 
+	 *
 	 * @var Tx_Dbmigrate_Configuration
 	 */
 	protected $configuration = NULL;
@@ -106,28 +106,6 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 			'%field%' => $field,
 		);
 		return strtr(self::$optionFieldTemplate, $replacePairs);
-	}
-
-	protected function executeCommand($command, $errorPreface = '') {
-		$lastLine = t3lib_utility_Command::exec($command, $output, $exitCode);
-
-		if (0 !== $exitCode) {
-			$this->handleErrorCommand($command, $output, $lastLine, $errorPreface);
-		}
-	}
-
-	protected function handleErrorCommand($command, $output, $lastLine, $prefaceMessage = '') {
-		$msg = '';
-
-		if ('' !== $prefaceMessage) {
-			$msg .= $prefaceMessage;
-		}
-
-		$msg .= '<pre>' . $command . '</pre>';
-		$msg .= '<pre>' . $lastLine . '</pre>';
-		$msg .= '<pre>' . implode(LF, $output) . '</pre>';
-
-		throw new Exception($msg);
 	}
 
 	protected function getTranslation($key) {

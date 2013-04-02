@@ -101,6 +101,7 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 			if ($isSelectedAction) {
 				$this->action = $_action;
 				$this->action->injectConfiguration($this->configuration);
+// 				$this->action->initialize();
 			}
 
 			$url = 'mod.php?M=user_task&SET[function]=sys_action.' . __CLASS__ . '&select=' . $actionNameNormalized;

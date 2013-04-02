@@ -26,30 +26,24 @@
  ***************************************************************/
 
 /**
- * ActionInterface.php
+ * Clone.php
  *
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Encapsulates the clone command.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
+
+require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractCommand.php');
 
 /**
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Encapsulates the clone command.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-interface Tx_Dbmigrate_Task_RepositoryManager_Action {
+class Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Clone extends Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand {
 
-// 	public function initialize();
+	protected $commandTemplate = 'git clone %repository% %targetPath% 2>&1';
 
-	public function checkAccess();
-
-	public function getName();
-
-	public function getOptions();
-
-	public function renderForm();
-
-	public function process();
+	protected $errorPreface = 'Cloning the repository failed. Please see the following output for further details:';
 }
 ?>

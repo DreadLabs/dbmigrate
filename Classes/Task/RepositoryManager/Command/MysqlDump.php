@@ -26,30 +26,24 @@
  ***************************************************************/
 
 /**
- * ActionInterface.php
+ * MysqlDump.php
  *
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Dumps specific tables of a TYPO3 database
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
+
+require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractCommand.php');
 
 /**
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Dumps specific tables of a TYPO3 database
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-interface Tx_Dbmigrate_Task_RepositoryManager_Action {
+class Tx_Dbmigrate_Task_RepositoryManager_Command_MysqlDump extends Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand implements {
 
-// 	public function initialize();
+	protected $commandTemplate = 'mysqldump -u%user% -h%host% -p%password% -c --no-create-db %database% %default% %additional% > %targetPath%%projectName%.sql';
 
-	public function checkAccess();
-
-	public function getName();
-
-	public function getOptions();
-
-	public function renderForm();
-
-	public function process();
+	protected $errorPreface = 'The dumping of the the baseline file failed. Maybe the reason can be found in the output:';
 }
 ?>

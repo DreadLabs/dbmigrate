@@ -42,8 +42,6 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
  */
 class Tx_Dbmigrate_Task_RepositoryManager_Action_Clone extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
 
-	protected static $command = 'git clone %repository% %targetPath% 2>&1';
-
 	public function checkAccess() {
 		return $GLOBALS['BE_USER']->isAdmin();
 	}
@@ -66,19 +64,18 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Clone extends Tx_Dbmigrate_Task
 	}
 
 	protected function cloneRepository() {
-		$this->raiseExceptionIf(
-			TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git')),
+		$this->raiseExceptionUnless(
+			file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git')),
 			'The repository is already cloned!'
 		);
 
-		$replacePairs = array(
+		/* @var $command Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Clone */
+		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Clone');
+		$command->setArguments(array(
 			'%repository%' => escapeshellcmd(t3lib_div::_GP('repository')),
 			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
-		);
-
-		$command = strtr(self::$command, $replacePairs);
-
-		$this->executeCommand($command, 'Clonging the repository failed. Please see the following output for further details:');
+		));
+		$command->execute();
 	}
 }
 ?>

@@ -26,30 +26,24 @@
  ***************************************************************/
 
 /**
- * ActionInterface.php
+ * UpdateGitIndex.php 
  *
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Updates the git index for the command task action.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
+
+require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractCommand.php');
 
 /**
- * Defines all methods which needs to be implemented in all concrete task center actions.
+ * Updates the git index for the command task action.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-interface Tx_Dbmigrate_Task_RepositoryManager_Action {
+class Tx_Dbmigrate_Task_RepositoryManager_Command_Git_UpdateIndex extends Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand {
 
-// 	public function initialize();
+	protected $commandTemplate = 'cd %changesPath% && git update-index --assume-unchanged %changes% 2>&1';
 
-	public function checkAccess();
-
-	public function getName();
-
-	public function getOptions();
-
-	public function renderForm();
-
-	public function process();
+	protected $errorPreface = 'Updating the index for setting the "assume unchanged" flag for the committed changes failed. Please see the following output for details:';
 }
 ?>

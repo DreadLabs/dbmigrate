@@ -40,7 +40,7 @@
  */
 class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 
-	public static $defaultTables = array(
+	protected static $defaultTables = array(
 		'backend_layout',
 		'be_groups',
 		'be_users',
@@ -95,6 +95,10 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 		return $isTableExisting && $isTableActive;
 	}
 
+	public function getDefaultTables() {
+		return self::$defaultTables;
+	}
+
 	public function getAdditionalTables() {
 		$tables = $this->configuration['monitoringTables'];
 
@@ -109,6 +113,19 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 		}
 
 		return $additionalTables;
+	}
+
+	public function getNormalizedSystemSiteName($override = NULL) {
+		$cleanupPattern = '/[^a-zA-Z0-9]/';
+		$sitename = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'];
+
+		if (FALSE === is_null($override)) {
+			$sitename = $override;
+		}
+
+		$name = preg_replace($cleanupPattern, '', $sitename);
+
+		return strtolower($name);
 	}
 }
 ?>

@@ -44,10 +44,6 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName%</option>';
 
-	protected static $commitCommand = 'cd %changesPath% && git add -f %changes% && git commit -m %commitMessage% --author=%author% %changes% && git push origin master 2>&1';
-
-	protected static $updateIndexCommand = 'cd %changesPath% && git update-index --assume-unchanged %changes% 2>&1';
-
 	public function checkAccess() {
 		return TRUE;
 	}
@@ -110,16 +106,14 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	protected function commit() {
 		$user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
 
-		$replacePairs = array(
+		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Commit');
+		$command->setArguments(array(
 			'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation),
 			'%commitMessage%' => escapeshellarg(t3lib_div::_GP('subject') . LF . LF . t3lib_div::_GP('description')),
 			'%author%' => escapeshellarg($user->getAuthorRFC2822Formatted()),
 			'%changes%' => escapeshellcmd(implode(' ', t3lib_div::_GP('change'))),
-		);
-
-		$command = strtr(self::$commitCommand, $replacePairs);
-
-		$this->executeCommand($command, 'The committing failed. Please see the following output for details:');
+		));
+		$command->execute();
 
 		return 'Successfully committed the selected changes into the repository.';
 	}
@@ -151,14 +145,12 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 			$changeRepository->removeOneByName($change);
 		}
 
-		$replacePairs = array(
+		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_UpdateIndex');
+		$command->setArguments(array(
 			'%changesPath%' => Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation,
 			'%changes%' => implode(' ', t3lib_div::_GP('change')),
-		);
-
-		$command = strtr(self::$updateIndexCommand, $replacePairs);
-
-		$this->executeCommand($command, 'Updating the index for setting the "assume unchanged" flag for the commited changes failed. Please see the following output for details:');
+		));
+		$command->execute();
 
 		return 'Successfully removed committed changes.';
 	}

@@ -42,11 +42,15 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
  */
 class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
 
-	protected static $repositoryInitCommand = 'git init %targetPath% 2>&1';
+	/**
+	 *
+	 * @var Tx_Dbmigrate_Domain_Repository_ChangeRepository
+	 */
+	protected $changeRepository = NULL;
 
-	protected static $repositoryRemoteAddCommand = 'cd %targetPath% && git remote add %remoteName% %remotePath% 2>&1';
-
-	protected static $dumpCommand = 'mysqldump -u%user% -h%host% -p%password% -c --no-create-db %database% %default% %additional% > %targetPath%%projectName%.sql';
+// 	public function initialize() {
+// 		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+// 	}
 
 	public function checkAccess() {
 		// @TODO: Tx_Dbmigrate_Backend_User instance!!!
@@ -56,7 +60,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	public function getOptions() {
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.init.field.projectName.label'),
-			'field' => '<input name="projectName" value="' . $this->getNormalizedProjectNameFromSysSitename() . '" size="60" />',
+			'field' => '<input name="projectName" value="' . $this->configuration->getNormalizedSystemSiteName() . '" size="60" />',
 		);
 
 		$this->options[] = array(
@@ -66,26 +70,13 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.init.field.default.label'),
-			'field' => '<textarea name="default" cols="60" rows="5">' . implode(' ', Tx_Dbmigrate_Configuration::$defaultTables) . '</textarea>',
+			'field' => '<textarea name="default" cols="60" rows="5">' . implode(' ', $this->configuration->getDefaultTables()) . '</textarea>',
 		);
 
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.init.field.additional.label'),
 			'field' => '<textarea name="additional" cols="60" rows="5">' . implode(' ', $this->configuration->getAdditionalTables()) . '</textarea>',
 		);
-	}
-
-	protected function getNormalizedProjectNameFromSysSitename($override = NULL) {
-		$cleanupPattern = '/[^a-zA-Z0-9]/';
-		$sitename = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'];
-
-		if (TRUE !== is_null($override)) {
-			$sitename = $override;
-		}
-
-		$name = preg_replace($cleanupPattern, '', $sitename);
-
-		return strtolower($name);
 	}
 
 	public function process() {
@@ -103,41 +94,39 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	}
 
 	protected function createRepository() {
-		if (TRUE === file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git'))) {
-			throw new Exception('The repository is already initialized!');
-		}
+		$this->raiseExceptionIf(
+			file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git')),
+			'The repository is already initialized!'
+		);
 
 		$this->initRepository();
 
 		$this->addRepositoryRemote();
 
-		return 'The repository was successfully intialized.';
+		return 'The repository was successfully initialized.';
 	}
 
 	protected function initRepository() {
-		$replacePairs = array(
+		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Init');
+		$command->setArguments(array(
 			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
-		);
-
-		$command = strtr(self::$repositoryInitCommand, $replacePairs);
-
-		$this->executeCommand($command, 'The repository initialization failed. Please see the following output for further details:');
+		));
+		$command->execute();
 	}
 
 	protected function addRepositoryRemote() {
-		$replacePairs = array(
+		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_RemoteAdd');
+		$command->setArguments(array(
 			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
 			'%remoteName%' => 'origin',
 			'%remotePath%' => escapeshellcmd(t3lib_div::_GP('repository')),
-		);
-
-		$command = strtr(self::$repositoryRemoteAddCommand, $replacePairs);
-
-		$this->executeCommand($command, 'The addition of the remote repository failed. Please see the following output for further details:');
+		));
+		$command->execute();
 	}
 
 	protected function createBaseline() {
-		$replacePairs = array(
+		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_MysqlDump');
+		$command->setArguments(array(
 			'%user%' => TYPO3_db_username,
 			'%host%' => TYPO3_db_host,
 			'%password%' => TYPO3_db_password,
@@ -145,14 +134,11 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 			'%default%' =>  escapeshellcmd(t3lib_div::_GP('default')),
 			'%additional%' => escapeshellcmd(t3lib_div::_GP('additional')),
 			'%targetPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation),
-			'%projectName%' => escapeshellcmd($this->getNormalizedProjectNameFromSysSitename(t3lib_div::_GP('projectName'))),
-		);
+			'%projectName%' => escapeshellcmd($this->configuration->getNormalizedSystemSiteName(t3lib_div::_GP('projectName'))),
+		));
+		$command->execute();
 
-		$command = strtr(self::$dumpCommand, $replacePairs);
-
-		$this->executeCommand($command, 'The dumping of the the baseline file failed. Maybe the reason can be found in the output:');
-
-		return 'The base line dump was successfully created!';
+		return 'The base line dump was successfully created.';
 	}
 
 	protected function createIgnoreFile() {
@@ -166,7 +152,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 		fclose($fh);
 
-		return 'Successfully written .gitignore';
+		return 'Successfully written .gitignore.';
 	}
 }
 ?>
