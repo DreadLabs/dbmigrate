@@ -55,7 +55,7 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
 
 		if ($lastQuery !== '') {
-			$this->logQueryForTable($table, $lastQuery);
+			$this->storeChange($table, $lastQuery);
 		}
 	}
 
