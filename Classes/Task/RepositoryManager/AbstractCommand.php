@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\CommandUtility;
+
 /**
  * AbstractCommand.php
  *
@@ -32,13 +36,7 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * provides some common methods for all concrete command implementations.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand implements Tx_Dbmigrate_Task_RepositoryManager_CommandInterface {
+class AbstractCommand implements \DreadLabs\Dbmigrate\Task\RepositoryManager\CommandInterface {
 
 	/**
 	 * you have to specify this in your concrete command implementation
@@ -73,7 +71,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand implements Tx_Dbmigrat
 
 		$this->raiseExceptionIf('' === $this->command, 'The command is empty. Nothing to execute!');
 
-		$this->lastLine = t3lib_utility_Command::exec($this->command, $this->output, $this->exitCode);
+		$this->lastLine = CommandUtility::exec($this->command, $this->output, $this->exitCode);
 
 		$this->raiseExceptionIf(0 !== $this->exitCode, $this->createErrorMessage($this->errorPreface));
 	}
@@ -94,13 +92,13 @@ class Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand implements Tx_Dbmigrat
 
 	protected function raiseExceptionIf($message) {
 		if (TRUE === $condition) {
-			throw new Exception($message, 1364459453);
+			throw new \Exception($message, 1364459453);
 		}
 	}
 
 	protected function raiseExceptionUnless($message) {
 		if (FALSE === $condition) {
-			throw new Exception($condition, 1364459430);
+			throw new \Exception($condition, 1364459430);
 		}
 	}
 }

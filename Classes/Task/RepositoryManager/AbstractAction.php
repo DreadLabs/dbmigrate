@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,36 +34,28 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/ActionInterface.php');
-
-/**
- * Abstract task center action implementation which encapsulates functionalities which are common to all concrete task center actions.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_Dbmigrate_Task_RepositoryManager_Action {
+abstract class AbstractAction implements \DreadLabs\Dbmigrate\Task\RepositoryManager\ActionInterface {
 
 	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
 
-	protected static $optionFieldTemplate = '<label><h3 class="uppercase">%label%</h3>%field%</label><br />';
-
 	protected static $formActionUrlTemplate = 'mod.php?M=user_task&SET[function]=sys_action.%taskClass%&select=%select%&submit=%submit%';
+
+	protected static $optionFieldTemplate = '<label class="tx-dbmigrate-repositorymanager-actionoption"><h3 class="uppercase">%label%</h3>%field%</label><br />';
 
 	protected $options = array();
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Configuration
+	 * @var \DreadLabs\Dbmigrate\Configuration
 	 */
 	protected $configuration = NULL;
 
-	public function injectConfiguration(Tx_Dbmigrate_Configuration $configuration) {
+	public function injectConfiguration(\DreadLabs\Dbmigrate\Configuration $configuration) {
 		$this->configuration = $configuration;
 	}
 
 	public function getName() {
-		$parts = explode('_', get_class($this));
+		$parts = explode('\\', get_class($this));
 
 		return strtolower(array_pop($parts));
 	}
@@ -71,15 +65,15 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 
 		$url = $this->getFormUrl();
 
-		$optionsForm = '<form action="' . $url . '" method="post">';
+		$optionsForm = '<form class="tx-dbmigrate-repositorymanager-action tx-dbmigrate-repositorymanager-action-' . strtolower($this->getName()) . '" action="' . $url . '" method="post">';
 
 		foreach ($this->options as $option) {
-			$optionsForm .=  $this->buildOptionField($option['label'], $option['field']);
+			$optionsForm .=  $this->buildOptionField($option);
 		}
 
 		$optionsForm .= '<br />';
 
-		$optionsForm .= '<input type="submit" name="execute" value="' . $this->getTranslation('task.action.submit') . '" />';
+		$optionsForm .= '<input type="submit" class="tx-dbmigrate-repositorymanager-actionbutton" name="execute" value="' . $this->getTranslation('task.action.submit') . '" />';
 
 		$optionsForm .= '</form>';
 
@@ -90,7 +84,7 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 		$name = $this->getName();
 
 		$replacePairs = array(
-			'%taskClass%' => 'Tx_Dbmigrate_Task_RepositoryManager',
+			'%taskClass%' => 'DreadLabs\Dbmigrate\Task\RepositoryManager',
 			'%select%' => $name,
 			'%submit%' => $name,
 		);
@@ -100,12 +94,21 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 		return $url;
 	}
 
-	protected function buildOptionField($label, $field) {
+	protected function buildOptionField($option) {
 		$replacePairs = array(
-			'%label%' => $label,
-			'%field%' => $field,
+			'%label%' => $option['label'],
+			'%field%' => $option['field'],
 		);
-		return strtr(self::$optionFieldTemplate, $replacePairs);
+
+		$template = self::$optionFieldTemplate;
+
+		$hasOwnTemplate = isset($option['template']) && '' !== $option['template'];
+
+		if ($hasOwnTemplate) {
+			$template = $option['template'];
+		}
+
+		return strtr($template, $replacePairs);
 	}
 
 	protected function getTranslation($key) {
@@ -114,13 +117,13 @@ abstract class Tx_Dbmigrate_Task_RepositoryManager_AbstractAction implements Tx_
 
 	protected function raiseExceptionUnless($condition, $message) {
 		if (FALSE === $condition) {
-			throw new Exception($condition, 1364332797);
+			throw new \Exception($condition, 1364332797);
 		}
 	}
 
 	protected function raiseExceptionIf($condition, $message) {
 		if (TRUE === $condition) {
-			throw new Exception($message, 1364333374);
+			throw new \Exception($message, 1364333374);
 		}
 	}
 }

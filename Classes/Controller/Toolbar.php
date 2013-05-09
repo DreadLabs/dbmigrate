@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Toolbar.php
  *
@@ -32,25 +36,19 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * XHR controller for backend toolbar item/menu functionality.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Controller_Toolbar implements t3lib_Singleton {
+class Toolbar implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Backend_User
+	 * @var \DreadLabs\Dbmigrate\Backend\User
 	 */
 	protected $user = NULL;
 
-	public function injectUser(Tx_Dbmigrate_Backend_User $user = NULL) {
+	public function injectUser(\DreadLabs\Dbmigrate\Backend\User $user = NULL) {
 		if (TRUE !== is_null($user)) {
 			$this->user = $user;
 		} else {
-			$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+			$this->user = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Backend\\User');
 		}
 	}
 }

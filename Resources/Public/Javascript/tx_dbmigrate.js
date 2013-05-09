@@ -77,7 +77,6 @@ var DbmigrateMenu = Class.create({
 					return false;
 				};
 			});
-
 		}, this);
 	},
 
@@ -185,6 +184,21 @@ var DbmigrateMenu = Class.create({
 		}
 
 		this.toggleMenu(event);
+	},
+
+	commitWizard: function (signalData) {
+		var
+			wizardUrl = '/typo3/mod.php?M=user_task&SET[function]=sys_action.Tx_Dbmigrate_Task_RepositoryManager&select=commitwizard';
+
+		TYPO3.dbmigrate.TaskActionWindow = new TYPO3.dbmigrate.ActionWindow({
+			title: 'dbmigrate',
+			listeners: {
+				close: function () {
+				}
+			}
+		}).show(true, function () {
+			Ext.getCmp('dbmigrateActionWindow').setUrl(wizardUrl);;
+		});
 	}
 
 });

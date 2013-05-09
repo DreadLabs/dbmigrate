@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Backend\Utility\BackendUtility;
+
 /**
  * AbstractProcessor.php
  *
@@ -32,25 +37,19 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Abstract t3lib_DB processor class implements business logic common to all concrete processor implementations.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
+class AbstractProcessor implements \TYPO3\CMS\Core\SingletonInterface {
 
 	protected $isInitialized = FALSE;
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Configuration
+	 * @var \DreadLabs\Dbmigrate\Configuration
 	 */
 	protected $configuration = NULL;
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Backend_User
+	 * @var \DreadLabs\Dbmigrate\Backend\User
 	 */
 	protected $user = NULL;
 
@@ -67,16 +66,16 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 	}
 
 	protected function initializeConfiguration() {
-		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+		$this->configuration = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Configuration');
 	}
 
 	protected function initializeUser() {
-		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		$this->user = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Backend\\User');
 		$this->user->injectConfiguration($this->configuration);
 	}
 
 	protected function initializeChangeRepository() {
-		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$this->changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Repository\\ChangeRepository');
 		$this->changeRepository->injectUser($this->user);
 	}
 
@@ -88,10 +87,14 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 		try {
 			$this->raiseExceptionUnlessTableIsActive($table);
 
+			$lastChangeId = $this->user->getChangeId();
+
 			$this->changeRepository->add($query);
-		} catch (Exception $e) {
-			// fail silently
-			// @todo: syslog or similar
+
+// 			$this->setUpdateSignal($lastChangeId);
+
+			$this->user->clearChange();
+		} catch (\Exception $e) {
 		}
 	}
 
@@ -100,7 +103,56 @@ class Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_Singleton {
 
 		if ($raiseException) {
 			$msg = sprintf('The query is not loggable for the table %s: Table is not active!', $table);
-			throw new Exception($msg, 1364320214);
+			throw new \Exception($msg, 1364320214);
+		}
+	}
+
+	protected function raiseExceptionIfChangeIsBlacklisted($table, $fields) {
+		$isBlacklistedChange = FALSE;
+
+		$blacklistEntries = $this->configuration->getTableBlacklist($table);
+
+		foreach ($blacklistEntries as $blacklistEntry) {
+			if (TRUE === $isBlacklistedChange) {
+				continue;
+			}
+
+			$isBlacklistedChange = $this->checkBlacklistedChange($fields, $blacklistEntry);
+		}
+
+		if ($isBlacklistedChange) {
+			$msg = sprintf('The query is not loggable for the table because of blacklist settings.');
+			throw new \Exception($msg, 1366662349);
+		}
+	}
+
+	protected function checkBlacklistedChange($fields, $blacklistEntry) {
+		$blacklistFields = explode(',', $blacklistEntry);
+
+		$numberOfFieldsInChange = count($fields);
+		$numberOfFieldsInBlacklistEntry = count($blacklistFields);
+
+		$fieldAmountsAreEqual = $numberOfFieldsInBlacklistEntry === $numberOfFieldsInChange;
+
+		$fieldsInChange = array_keys($fields);
+
+		sort($fieldsInChange);
+		sort($blacklistFields);
+
+		$fieldsAreEqual = $fieldsInChange === $blacklistFields;
+
+		return $fieldAmountsAreEqual && $fieldsAreEqual;
+	}
+
+	protected function setUpdateSignal($lastChangeId) {
+		$moduleData = $GLOBALS['BE_USER']->getModuleData('TYPO3\\CMS\\Backend\\Utility\\BackendUtility::getUpdateSignal', 'ses');
+
+		if (!isset($moduleData['tx_dbmigrate::commitWizard'])) {
+			$this->configuration->setMonitoringEnabledOverride(FALSE);
+
+			BackendUtility::setUpdateSignal('tx_dbmigrate::commitWizard', $lastChangeId);
+
+			$this->configuration->setMonitoringEnabledOverride(NULL);
 		}
 	}
 }

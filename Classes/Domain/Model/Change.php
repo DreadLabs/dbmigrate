@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Domain\Model;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,27 +30,23 @@
 /**
  * Change.php
  *
- * Depict the domain model "change".
+ * Depicts the domain model "change".
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Depict the domain model "change".
- *
- * @author Thomas Juhnke <tommy@van-tomas.default>
- */
-class Tx_Dbmigrate_Domain_Model_Change {
+class Change {
 
 	public static $idFormat = '%04d';
 
-	public static $nameFormat = '%date%-%username%-%changeId%-%changeType%.sql';
+	public static $nameFormat = '%date%-%username%-%changeId%.sql';
+
+	protected static $fileSizeBreakPoint = 1024;
 
 	protected static $fileSizeUnits = array(' Byte', ' KB', ' MB');
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Backend_User
+	 * @var \DreadLabs\Dbmigrate\Backend\User
 	 */
 	protected $user = NULL;
 
@@ -58,7 +56,7 @@ class Tx_Dbmigrate_Domain_Model_Change {
 
 	protected $storageLocation = '';
 
-	public function injectUser(Tx_Dbmigrate_Backend_User $user) {
+	public function injectUser(\DreadLabs\Dbmigrate\Backend\User $user) {
 		$this->user = $user;
 	}
 
@@ -101,10 +99,10 @@ class Tx_Dbmigrate_Domain_Model_Change {
 		$fileSize = $fileInformation['size'];
 		$fileSizeUnit = self::$fileSizeUnits[$i];
 
-		while ($fileSize > 1024 || $i === $maxSize) {
+		while ($fileSize > self::$fileSizeBreakPoint || $i === $maxSize) {
 			$i = $i + 1;
 			$fileSizeUnit = self::$fileSizeUnits[$i];
-			$fileSize = $fileSize / 1024;
+			$fileSize = $fileSize / self::$fileSizeBreakPoint;
 		}
 
 		return round($fileSize, 1) . $fileSizeUnit;
@@ -117,7 +115,7 @@ class Tx_Dbmigrate_Domain_Model_Change {
 
 		if (FALSE === $fh) {
 			$msg = sprintf('The selected file %s could not be opened. Check directory permissions!', $this->name);
-			throw new Exception($msg, 1363976580);
+			throw new \Exception($msg, 1363976580);
 		}
 
 		while (FALSE === feof($fh)) {

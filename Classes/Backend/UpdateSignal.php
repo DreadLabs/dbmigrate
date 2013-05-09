@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,24 +28,27 @@
  ***************************************************************/
 
 /**
- * MysqlDump.php
+ * UpdateSignal.php
  *
- * Dumps specific tables of a TYPO3 database
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractCommand.php');
-
-/**
- * Dumps specific tables of a TYPO3 database
+ * Defines hook for the \TYPO3\CMS\Backend\Utility\BackendUtility updateSignalHook
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-class Tx_Dbmigrate_Task_RepositoryManager_Command_MysqlDump extends Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand implements {
+class UpdateSignal {
 
-	protected $commandTemplate = 'mysqldump -u%user% -h%host% -p%password% -c --no-create-db %database% %default% %additional% > %targetPath%%projectName%.sql';
-
-	protected $errorPreface = 'The dumping of the the baseline file failed. Maybe the reason can be found in the output:';
+	/**
+	 * called as a hook in \TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal
+	 *
+	 * @param array $params
+	 * @param mixed $ref
+	 * @return string list item HTML attibutes
+	 */
+	public function commitWizard(&$params, $ref) {
+		$params['JScode'] = '
+			if (top && top.TYPO3BackendDbmigrateMenu) {
+				top.TYPO3BackendDbmigrateMenu.commitWizard(\'' . $params['parameter'] . '\');
+			}
+		';
+	}
 }
 ?>

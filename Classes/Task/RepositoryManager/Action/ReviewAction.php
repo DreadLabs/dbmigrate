@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Action;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,11 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('dbmigrate', 'vendor/jdorn/sql-formatter/lib/SqlFormatter.php');
+
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \DreadLabs\Dbmigrate\Domain\Model\Change;
+
 /**
  * Review.php
  *
@@ -33,14 +40,7 @@
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
 
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractAction.php');
-
-/**
- * Task center task action for reviewing a selected, uncommitted migration/change.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
+class ReviewAction extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractAction {
 
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName% (%changeSize%)</option>';
 
@@ -68,7 +68,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 	protected function getChanges() {
 		$options = array();
 
-		$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Repository\\ChangeRepository');
 		$changes = $changeRepository->findAll();
 
 		foreach ($changes as $change) {
@@ -87,21 +87,23 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Review extends Tx_Dbmigrate_Tas
 		$content = '';
 
 		try {
-			$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
-			$change = $changeRepository->findOneByName(t3lib_div::_GP('change'));
+			$changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Repository\\ChangeRepository');
+			$change = $changeRepository->findOneByName(GeneralUtility::_GP('change'));
 
-			$this->raiseExceptionUnless($change instanceof Tx_Dbmigrate_Domain_Model_Change, 'The selected change is invalid/not existing!');
+			$this->raiseExceptionUnless($change instanceof Change, 'The selected change is invalid/not existing!');
 
 			$content = $change->getContent();
 
+			$content = \SqlFormatter::format($content, FALSE);
+
 			$replacePairs = array(
-				'%width%' => t3lib_div::_GP('width'),
-				'%height%' => t3lib_div::_GP('height'),
+				'%width%' => GeneralUtility::_GP('width'),
+				'%height%' => GeneralUtility::_GP('height'),
 				'%content%' => htmlspecialchars($content),
 			);
 
 			$content = strtr(self::$processOutputTemplate, $replacePairs);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$content .= $e->getMessage();
 		}
 

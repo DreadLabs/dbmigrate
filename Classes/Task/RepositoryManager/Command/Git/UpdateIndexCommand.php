@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Command\Git;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,24 +28,16 @@
  ***************************************************************/
 
 /**
- * Clone.php
+ * UpdateIndexCommand.php 
  *
- * Encapsulates the clone command.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractCommand.php');
-
-/**
- * Encapsulates the clone command.
+ * Updates the git index for the command task action.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-class Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Clone extends Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand {
+class UpdateIndexCommand extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractCommand {
 
-	protected $commandTemplate = 'git clone %repository% %targetPath% 2>&1';
+	protected $commandTemplate = 'cd %changesPath% && git update-index --assume-unchanged %changes% 2>&1';
 
-	protected $errorPreface = 'Cloning the repository failed. Please see the following output for further details:';
+	protected $errorPreface = 'Updating the index for setting the "assume unchanged" flag for the committed changes failed. Please see the following output for details:';
 }
 ?>

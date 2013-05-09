@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Command\Git;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,16 +28,8 @@
  ***************************************************************/
 
 /**
- * Commit.php
+ * CommitCommand.php
  *
- * Handles the commit command for data repository handling.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractCommand.php');
-
-/**
  * Handles the commit command for data repository handling.
  *
  * Note that this command is a "multi-command" as it cd's into the change directory,
@@ -43,7 +37,7 @@ require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-class Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Commit extends Tx_Dbmigrate_Task_RepositoryManager_AbstractCommand {
+class CommitCommand extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractCommand {
 
 	protected $commandTemplate = 'cd %changesPath% && git add -f %changes% && git commit -m %commitMessage% --author=%author% %changes% && git push origin master 2>&1';
 

@@ -1,5 +1,5 @@
 <?php
-namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Command\Git;
 
 /***************************************************************
  *  Copyright notice
@@ -28,16 +28,16 @@ namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
  ***************************************************************/
 
 /**
- * CommandInterface.php
+ * RemoteAddCommand.php 
  *
- * Interface for all command implementations.
+ * Performs the git remote add command for the init task action.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-interface CommandInterface {
+class RemoteAddCommand extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractCommand {
 
-	public function setArguments(array $arguments);
+	protected $commandTemplate = 'cd %targetPath% && git remote add %remoteName% %remotePath% 2>&1';
 
-	public function execute();
+	protected $errorPreface = 'The addition of the remote repository failed. Please see the following output for further details:';
 }
 ?>

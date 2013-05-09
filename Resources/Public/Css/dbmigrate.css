@@ -15,3 +15,84 @@
 	#tx-dbmigrate-menu .toolbar-item-menu .divider:hover {
 		background: #dbdbdb;
 	}
+
+	.tx-dbmigrate-repositorymanager-action-commitwizardaction .tx-dbmigrate-repositorymanager-action-commitwizard-wizarditem {
+		float: left;
+		height: 50px;
+		margin: 0 10px 30px 0;
+		overflow: hidden;
+		position: relative;
+		width: 50px;
+	}
+		.tx-dbmigrate-repositorymanager-action-commitwizard-option {
+			display: none;
+		}
+		.tx-dbmigrate-repositorymanager-action-commitwizard-option + h3 {
+			background-color: transparent;
+			background-position: 0 0;
+			background-repeat: no-repeat;
+			border: none;
+			cursor: pointer;
+			float: left;
+			height: 22px;
+			width: 50px;
+		}
+		body#ext-taskcenter-task-index-php .tx-dbmigrate-repositorymanager-action-commitwizardaction .tx-dbmigrate-repositorymanager-action-commitwizard-wizarditem h3 {
+			margin: 0;
+			padding-top: 48px;
+		}
+		.tx-dbmigrate-repositorymanager-action-commitwizard-option-spellcheck + h3 {
+			background-image: url(/typo3conf/ext/dbmigrate/Resources/Public/Images/wizard-commit-spellcheck.png);
+		}
+		.tx-dbmigrate-repositorymanager-action-commitwizard-option-edit + h3 {
+			background-image: url(/typo3conf/ext/dbmigrate/Resources/Public/Images/wizard-commit-edit.png);
+		}
+		.tx-dbmigrate-repositorymanager-action-commitwizard-option-add + h3 {
+			background-image: url(/typo3conf/ext/dbmigrate/Resources/Public/Images/wizard-commit-add.png);		
+		}
+		.tx-dbmigrate-repositorymanager-action-commitwizard-option-delete + h3 {
+			background-image: url(/typo3conf/ext/dbmigrate/Resources/Public/Images/wizard-commit-delete.png);
+		}
+		.tx-dbmigrate-repositorymanager-action-commitwizard-option-move + h3 {
+			background-image: url(/typo3conf/ext/dbmigrate/Resources/Public/Images/wizard-commit-move.png);
+		}
+			.tx-dbmigrate-repositorymanager-action-commitwizardaction .tx-dbmigrate-repositorymanager-action-commitwizard-wizarditem h3 span {
+				background: #01df74;
+				border: 1px solid #000000;
+				border-radius: 5px;
+				display: none;
+				float: left;
+				height: 16px;
+				left: 27px;
+				padding: 2px;
+				position: absolute;
+				top: 27px;
+				width: 16px;
+			}
+			.tx-dbmigrate-repositorymanager-action-commitwizard-option:checked + h3 span {
+				background: #01df74 url(/typo3conf/ext/dbmigrate/Resources/Public/Images/wizard-commit-selected.png) center center no-repeat;
+				display: block;
+			}
+
+	.tx-dbmigrate-repositorymanager-action-commitwizardaction .tx-dbmigrate-repositorymanager-action-commitwizard-wizarditem:hover {
+		overflow: visible;
+	}
+
+	.tx-dbmigrate-repositorymanager-action-commitwizardaction .tx-dbmigrate-repositorymanager-actionoption {
+		clear: both;
+		display: block;
+	}
+
+	.tx-dbmigrate-repositorymanager-actionbutton {
+		clear: both;
+	}
+
+	/**
+	 * that would be nice *sigh*
+	#dbmigrateActionWindow #taskcenter-menu {
+		display: none;
+	}
+	*/
+	#taskcenter-item.fullwidth {
+		margin-left: 0 !important;
+	}

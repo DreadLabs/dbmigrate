@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,10 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use \TYPO3\CMS\Backend\Utility\IconUtility;
+
 /**
  * Toolbar.php
  *
@@ -32,13 +38,7 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Provides the backend toolbar item & toolbar item menu
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
+class Toolbar implements \TYPO3\CMS\Backend\Toolbar\ToolbarItemHookInterface {
 
 	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
 
@@ -61,33 +61,33 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	/**
 	 * reference back to the backend object
 	 *
-	 * @var	TYPO3backend
+	 * @var \TYPO3\CMS\Backend\Controller\BackendController
 	 */
 	protected $backendReference;
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Backend_User
+	 * @var \DreadLabs\Dbmigrate\Backend\User
 	 */
 	protected $user = NULL;
 
 	/**
 	 * 
-	 * @var Tx_Dbmigrate_Domain_Repository_ChangeRepository
+	 * @var \DreadLabs\Dbmigrate\Domain\Repository\ChangeRepository
 	 */
 	protected $changeRepository = NULL;
 
 	/**
 	 * constructor that receives a back reference to the backend
 	 *
-	 * @param	TYPO3backend	TYPO3 backend object reference
+	 * @param	\TYPO3\CMS\Backend\Controller\BackendController TYPO3 backend object reference
 	 */
-	public function __construct(TYPO3backend &$backendReference = NULL) {
+	public function __construct(\TYPO3\CMS\Backend\Controller\BackendController &$backendReference = NULL) {
 		$this->backendReference = $backendReference;
 
-		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		$this->user = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Backend\\User');
 
-		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$this->changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\Domain\Repository\ChangeRepository');
 		$this->changeRepository->injectUser($this->user);
 	}
 
@@ -131,12 +131,12 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	 */
 	protected function addJavascriptToBackend() {
 		$this->backendReference->addJavascriptFile(
-			t3lib_extMgm::extRelPath('dbmigrate') . 'Resources/Public/Javascript/tx_dbmigrate.js'
+			ExtensionManagementUtility::extRelPath('dbmigrate') . 'Resources/Public/Javascript/tx_dbmigrate.js'
 		);
 	}
 
 	protected function addToolbarItem() {
-		$icon = t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database', array(
+		$icon = IconUtility::getSpriteIcon('extensions-dbmigrate-database', array(
 			'title' => $this->getTranslation('toolbar.item.title')
 		));
 
@@ -173,7 +173,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 		);
 
 		$items[] = array(
-			'icon' => t3lib_iconWorks::getSpriteIcon('status-dialog-information'),
+			'icon' => IconUtility::getSpriteIcon('status-dialog-information'),
 			'title' => strtr($this->getTranslation('toolbar.item.menu.informational.uncommitedchanges'), $replacePairs),
 		);
 
@@ -223,7 +223,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 	protected function getTaskActionMenuItem($action) {
 		$item = array(
 			'href' => str_replace('%select%', $action, self::$taskActionLinkTemplate),
-			'icon' => t3lib_iconWorks::getSpriteIcon('extensions-dbmigrate-database-' . $action),
+			'icon' => IconUtility::getSpriteIcon('extensions-dbmigrate-database-' . $action),
 			'title' => $this->getTranslation('toolbar.item.menu.action.' . $action),
 		);
 
@@ -232,7 +232,7 @@ class Tx_Dbmigrate_Backend_Toolbar implements backend_toolbarItem {
 }
 
 if (TYPO3_MODE == 'BE') {
-	/* @var $_backend TYPO3backend */
-	$GLOBALS['TYPO3backend']->addToolbarItem('dbmigrate', 'Tx_Dbmigrate_Backend_Toolbar');
+	/* @var $_backend \TYPO3\CMS\Backend\Controller\BackendController */
+	$GLOBALS['TYPO3backend']->addToolbarItem('dbmigrate', 'DreadLabs\\Dbmigrate\\Backend\\Toolbar');
 }
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,13 +34,7 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Defines all methods which needs to be implemented in all concrete task center actions.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-interface Tx_Dbmigrate_Task_RepositoryManager_Action {
+interface ActionInterface {
 
 // 	public function initialize();
 

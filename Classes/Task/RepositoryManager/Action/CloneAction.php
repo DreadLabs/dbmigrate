@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Action;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,22 +27,16 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-/**
- * Clone.php
- *
- * Task center task action for cloning a migration/change repository into a secondary T3 instance.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractAction.php');
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \DreadLabs\Dbmigrate\Domain\Repository\ChangeRepository;
 
 /**
  * Task center task action for cloning a migration/change repository into a secondary T3 instance.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-class Tx_Dbmigrate_Task_RepositoryManager_Action_Clone extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
+class CloneAction extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractAction {
 
 	public function checkAccess() {
 		return $GLOBALS['BE_USER']->isAdmin();
@@ -65,15 +61,15 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Clone extends Tx_Dbmigrate_Task
 
 	protected function cloneRepository() {
 		$this->raiseExceptionUnless(
-			file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git')),
+			file_exists(ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation . '.git')),
 			'The repository is already cloned!'
 		);
 
-		/* @var $command Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Clone */
-		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Clone');
+		/* @var $command \DreadLabs\Dbmigrate\Task\RepositoryManager\Command\Git\Clone */
+		$command = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Task\\RepositoryManager\\Command\\Git\\CloneCommand');
 		$command->setArguments(array(
-			'%repository%' => escapeshellcmd(t3lib_div::_GP('repository')),
-			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
+			'%repository%' => escapeshellcmd(GeneralUtility::_GP('repository')),
+			'%targetPath%' => escapeshellcmd(ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation)),
 		));
 		$command->execute();
 	}

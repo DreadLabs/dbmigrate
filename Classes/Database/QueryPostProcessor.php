@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,17 +30,11 @@
 /**
  * QueryPostProcessor.php
  *
- * t3lib_DB post processor implements business logic for different database (DML) queries.
+ * \TYPO3\CMS\Core\Database\DatabaseConnection post processor implements business logic for different database (DML) queries.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * t3lib_DB post processor implements business logic for different database (DML) queries.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_DB_postProcessQueryHook {
+class QueryPostProcessor extends \DreadLabs\Dbmigrate\Database\AbstractProcessor implements \TYPO3\CMS\Core\Database\PostProcessQueryHookInterface {
 
 	/**
 	 * Post-processor for the exec_INSERTquery method.
@@ -46,10 +42,10 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @param string $table Database table name
 	 * @param array $fieldsValues Field values as key => value pairs
 	 * @param string/array $noQuoteFields List/array of keys NOT to quote
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function exec_INSERTquery_postProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
+	public function exec_INSERTquery_postProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
@@ -66,10 +62,10 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @param array $fields Field names
 	 * @param array $rows Table rows
 	 * @param string/array $noQuoteFields List/array of keys NOT to quote
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function exec_INSERTmultipleRows_postProcessAction(&$table, array &$fields, array &$rows, &$noQuoteFields, t3lib_DB $parentObject) {
+	public function exec_INSERTmultipleRows_postProcessAction(&$table, array &$fields, array &$rows, &$noQuoteFields, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
@@ -86,10 +82,10 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * @param string $where WHERE clause
 	 * @param array $fieldsValues Field values as key => value pairs
 	 * @param string/array $noQuoteFields List/array of keys NOT to quote
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function exec_UPDATEquery_postProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
+	public function exec_UPDATEquery_postProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
@@ -104,10 +100,10 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 *
 	 * @param string $table Database table name
 	 * @param string $where WHERE clause
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function exec_DELETEquery_postProcessAction(&$table, &$where, t3lib_DB $parentObject) {
+	public function exec_DELETEquery_postProcessAction(&$table, &$where, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;
@@ -121,10 +117,10 @@ class Tx_Dbmigrate_Database_QueryPostProcessor extends Tx_Dbmigrate_Database_Abs
 	 * Post-processor for the exec_TRUNCATEquery method.
 	 *
 	 * @param string $table Database table name
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function exec_TRUNCATEquery_postProcessAction(&$table, t3lib_DB $parentObject) {
+	public function exec_TRUNCATEquery_postProcessAction(&$table, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
 		$lastQuery = $parentObject->debug_lastBuiltQuery;

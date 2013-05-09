@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Command;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,31 +28,16 @@
  ***************************************************************/
 
 /**
- * Pull.php
+ * MysqlDumpCommand.php
  *
- * Task center task action for pulling migrations/changes data into the current T3 instance.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractAction.php');
-
-/**
- * Task center task action for pulling migrations/changes data into the current T3 instance.
+ * Dumps specific tables of a TYPO3 database.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-class Tx_Dbmigrate_Task_RepositoryManager_Action_Pull extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
+class MysqlDumpCommand extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractCommand {
 
-	public function checkAccess() {
-		// @TODO: Tx_Dbmigrate_Backend_User instance!!!
-		return $GLOBALS['BE_USER']->isAdmin();
-	}
+	protected $commandTemplate = 'mysqldump -u%user% -h%host% -p%password% -c --no-create-db %database% %default% %additional% > %targetPath%%projectName%.sql';
 
-	public function getOptions() {
-	}
-
-	public function process() {
-	}
+	protected $errorPreface = 'The dumping of the the baseline file failed. Maybe the reason can be found in the output:';
 }
 ?>

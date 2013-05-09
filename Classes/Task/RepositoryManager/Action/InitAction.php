@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Action;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,10 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \DreadLabs\Dbmigrate\Domain\Repository\ChangeRepository;
+
 /**
  * Init.php
  *
@@ -32,28 +38,20 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractAction.php');
-
-/**
- * Task center task action for initializing a migration/change data working copy repository.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
+class InitAction extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractAction {
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Domain_Repository_ChangeRepository
+	 * @var \DreadLabs\Dbmigrate\Domain\Repository\ChangeRepository
 	 */
 	protected $changeRepository = NULL;
 
 // 	public function initialize() {
-// 		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+// 		$this->changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Repository\\ChangeRepository');
 // 	}
 
 	public function checkAccess() {
-		// @TODO: Tx_Dbmigrate_Backend_User instance!!!
+		// @TODO: \DreadLabs\Dbmigrate\Backend\User instance!!!
 		return $GLOBALS['BE_USER']->isAdmin();
 	}
 
@@ -86,7 +84,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 			$content .= $this->createBaseline();
 
 			$content .= $this->createIgnoreFile();
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$content .= $e->getMessage();
 		}
 
@@ -95,7 +93,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 
 	protected function createRepository() {
 		$this->raiseExceptionIf(
-			file_exists(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.git')),
+			file_exists(ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation . '.git')),
 			'The repository is already initialized!'
 		);
 
@@ -107,34 +105,34 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	}
 
 	protected function initRepository() {
-		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Init');
+		$command = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Task\\RepositoryManager\\Command\\Git\\InitCommand');
 		$command->setArguments(array(
-			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
+			'%targetPath%' => escapeshellcmd(ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation)),
 		));
 		$command->execute();
 	}
 
 	protected function addRepositoryRemote() {
-		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_RemoteAdd');
+		$command = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Task\\RepositoryManager\\Command\\Git\\RemoteAddCommand');
 		$command->setArguments(array(
-			'%targetPath%' => escapeshellcmd(t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation)),
+			'%targetPath%' => escapeshellcmd(ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation)),
 			'%remoteName%' => 'origin',
-			'%remotePath%' => escapeshellcmd(t3lib_div::_GP('repository')),
+			'%remotePath%' => escapeshellcmd(GeneralUtility::_GP('repository')),
 		));
 		$command->execute();
 	}
 
 	protected function createBaseline() {
-		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_MysqlDump');
+		$command = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Task\\RepositoryManager\\Command\\MysqlDumpCommand');
 		$command->setArguments(array(
 			'%user%' => TYPO3_db_username,
 			'%host%' => TYPO3_db_host,
 			'%password%' => TYPO3_db_password,
 			'%database%' => TYPO3_db,
-			'%default%' =>  escapeshellcmd(t3lib_div::_GP('default')),
-			'%additional%' => escapeshellcmd(t3lib_div::_GP('additional')),
-			'%targetPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation),
-			'%projectName%' => escapeshellcmd($this->configuration->getNormalizedSystemSiteName(t3lib_div::_GP('projectName'))),
+			'%default%' =>  escapeshellcmd(GeneralUtility::_GP('default')),
+			'%additional%' => escapeshellcmd(GeneralUtility::_GP('additional')),
+			'%targetPath%' => ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation),
+			'%projectName%' => escapeshellcmd($this->configuration->getNormalizedSystemSiteName(GeneralUtility::_GP('projectName'))),
 		));
 		$command->execute();
 
@@ -142,7 +140,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Init extends Tx_Dbmigrate_Task_
 	}
 
 	protected function createIgnoreFile() {
-		$ignoreFilePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.gitignore');
+		$ignoreFilePath = ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation . '.gitignore');
 
 		$this->raiseExceptionIf(TRUE === file_exists($ignoreFilePath), '.gitignore file already exists. Overwrite will not happen!');
 

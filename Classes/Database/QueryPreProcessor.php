@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -28,17 +30,12 @@
 /**
  * QueryPreProcessor.php
  *
- * t3lib_DB pre processor implements business logic for different database (DML) queries.
+ * \TYPO3\CMS\Core\Database\DatabaseConnection pre processor implements business logic for different database (DML) queries.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
 
-/**
- * t3lib_DB pre processor implements business logic for different database (DML) queries.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_AbstractProcessor implements t3lib_DB_preProcessQueryHook {
+class QueryPreProcessor extends \DreadLabs\Dbmigrate\Database\AbstractProcessor implements \TYPO3\CMS\Core\Database\PreProcessQueryHookInterface {
 
 	/**
 	 * Pre-processor for the INSERTquery method.
@@ -46,13 +43,26 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @param string $table Database table name
 	 * @param array $fieldsValues Field values as key => value pairs
 	 * @param string/array $noQuoteFields List/array of keys NOT to quote
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function INSERTquery_preProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
+	public function INSERTquery_preProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
-		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
+		try {
+			$this->raiseExceptionUnlessTableIsActive($table);
+			$this->raiseExceptionIfChangeIsBlacklisted($table, $fieldsValues);
+
+			if ($this->isMonitoringEnabled() && FALSE === $this->user->hasActiveChange()) {
+				$changeId = $this->changeRepository->findNextFreeChangeOfUser();
+				$this->user->setChange($changeId);
+
+				$parentObject->store_lastBuiltQuery = TRUE;
+			}
+		} catch (\Exception $e) {
+			// fail silently
+			// @todo: syslog or similar
+		}
 	}
 
 	/**
@@ -64,13 +74,26 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @param array $fields Field names
 	 * @param array $rows Table rows
 	 * @param string/array $noQuoteFields List/array of keys NOT to quote
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function INSERTmultipleRows_preProcessAction(&$table, array &$fields, array &$rows, &$noQuoteFields, t3lib_DB $parentObject) {
+	public function INSERTmultipleRows_preProcessAction(&$table, array &$fields, array &$rows, &$noQuoteFields, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
-		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
+		try {
+			$this->raiseExceptionUnlessTableIsActive($table);
+			$this->raiseExceptionIfChangeIsBlacklisted($table, $fields);
+
+			if ($this->isMonitoringEnabled() && FALSE === $this->user->hasActiveChange()) {
+				$changeId = $this->changeRepository->findNextFreeChangeOfUser();
+				$this->user->setChange($changeId);
+
+				$parentObject->store_lastBuiltQuery = TRUE;
+			}
+		} catch (\Exception $e) {
+			// fail silently
+			// @todo: syslog or similar
+		}
 	}
 
 	/**
@@ -80,13 +103,26 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 * @param string $where WHERE clause
 	 * @param array $fieldsValues Field values as key => value pairs
 	 * @param string/array $noQuoteFields List/array of keys NOT to quote
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function UPDATEquery_preProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
+	public function UPDATEquery_preProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
-		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
+		try {
+			$this->raiseExceptionUnlessTableIsActive($table);
+			$this->raiseExceptionIfChangeIsBlacklisted($table, $fieldsValues);
+
+			if ($this->isMonitoringEnabled() && FALSE === $this->user->hasActiveChange()) {
+				$changeId = $this->changeRepository->findNextFreeChangeOfUser();
+				$this->user->setChange($changeId);
+
+				$parentObject->store_lastBuiltQuery = TRUE;
+			}
+		} catch (\Exception $e) {
+			// fail silently
+			// @todo: syslog or similar
+		}
 	}
 
 	/**
@@ -94,26 +130,50 @@ class Tx_Dbmigrate_Database_QueryPreProcessor extends Tx_Dbmigrate_Database_Abst
 	 *
 	 * @param string $table Database table name
 	 * @param string $where WHERE clause
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function DELETEquery_preProcessAction(&$table, &$where, t3lib_DB $parentObject) {
+	public function DELETEquery_preProcessAction(&$table, &$where, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
-		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
+		try {
+			$this->raiseExceptionUnlessTableIsActive($table);
+
+			if ($this->isMonitoringEnabled() && FALSE === $this->user->hasActiveChange()) {
+				$changeId = $this->changeRepository->findNextFreeChangeOfUser();
+				$this->user->setChange($changeId);
+
+				$parentObject->store_lastBuiltQuery = TRUE;
+			}
+		} catch (\Exception $e) {
+			// fail silently
+			// @todo: syslog or similar
+		}
 	}
 
 	/**
 	 * Pre-processor for the TRUNCATEquery method.
 	 *
 	 * @param string $table Database table name
-	 * @param t3lib_DB $parentObject
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject
 	 * @return void
 	 */
-	public function TRUNCATEquery_preProcessAction(&$table, t3lib_DB $parentObject) {
+	public function TRUNCATEquery_preProcessAction(&$table, \TYPO3\CMS\Core\Database\DatabaseConnection $parentObject) {
 		$this->initialize();
 
-		$parentObject->store_lastBuiltQuery = $this->isMonitoringEnabled();
+		try {
+			$this->raiseExceptionUnlessTableIsActive($table);
+
+			if ($this->isMonitoringEnabled() && FALSE === $this->user->hasActiveChange()) {
+				$changeId = $this->changeRepository->findNextFreeChangeOfUser();
+				$this->user->setChange($changeId);
+
+				$parentObject->store_lastBuiltQuery = TRUE;
+			}
+		} catch (\Exception $e) {
+			// fail silently
+			// @todo: syslog or similar
+		}
 	}
 }
 ?>

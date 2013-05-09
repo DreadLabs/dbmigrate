@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Utility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 /**
  * ExtensionManagement.php
  *
@@ -32,13 +36,7 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Provides extension management helpers for usage in ext_localconf/ext_tables.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Utility_ExtensionManagement implements t3lib_Singleton {
+class ExtensionManagement implements \TYPO3\CMS\Core\SingletonInterface {
 
 	protected static $shippedConfiguration = 'Configuration/Global/config.php';
 
@@ -49,7 +47,7 @@ class Tx_Dbmigrate_Utility_ExtensionManagement implements t3lib_Singleton {
 	);
 
 	public static function loadConfiguration() {
-		$defaultConfiguration = t3lib_extMgm::extPath('dbmigrate', self::$shippedConfiguration);
+		$defaultConfiguration = ExtensionManagementUtility::extPath('dbmigrate', self::$shippedConfiguration);
 		include_once($defaultConfiguration);
 
 		$instanceConfiguration = PATH_typo3conf . self::$instanceConfiguration;
@@ -66,21 +64,21 @@ class Tx_Dbmigrate_Utility_ExtensionManagement implements t3lib_Singleton {
 	}
 
 	public static function addToolbarItem($_EXTKEY) {
-		$GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'][] = t3lib_extMgm::extPath($_EXTKEY, 'Classes/Backend/Toolbar.php');
+		$GLOBALS['TYPO3_CONF_VARS']['typo3/backend.php']['additionalBackendItems'][] = ExtensionManagementUtility::extPath($_EXTKEY, 'Classes/Backend/Toolbar.php');
 	}
 
 	public static function addTCEMainHooks($_EXTKEY) {
-		$hookClass = t3lib_extMgm::extPath($_EXTKEY, 'Classes/Database/TceMainTransactionHandler.php:Tx_Dbmigrate_Database_TceMainTransactionHandler');
+		$hookClass = ExtensionManagementUtility::extPath($_EXTKEY, 'Classes/Database/TceMainTransactionHandler.php:DreadLabs\\Dbmigrate\\Database\\TceMainTransactionHandler');
 
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = $hookClass;
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = $hookClass;
 	}
 
 	public static function addQueryProcessors() {
-#		$preProcessor = 'EXT:dbmigrate/Classes/Database/QueryPreProcessor.php:Tx_Dbmigrate_Database_QueryPreProcessor';
-		$postProcessor = 'EXT:dbmigrate/Classes/Database/QueryPostProcessor.php:Tx_Dbmigrate_Database_QueryPostProcessor';
+		$preProcessor = 'EXT:dbmigrate/Classes/Database/QueryPreProcessor.php:DreadLabs\\Dbmigrate\\Database\\QueryPreProcessor';
+		$postProcessor = 'EXT:dbmigrate/Classes/Database/QueryPostProcessor.php:DreadLabs\\Dbmigrate\\Database\\QueryPostProcessor';
 
-#		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = $preProcessor;
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = $preProcessor;
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = $postProcessor;
 	}
 }

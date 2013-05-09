@@ -1,5 +1,5 @@
 <?php
-namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Action;
 
 /***************************************************************
  *  Copyright notice
@@ -28,16 +28,23 @@ namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
  ***************************************************************/
 
 /**
- * CommandInterface.php
+ * Pull.php
  *
- * Interface for all command implementations.
+ * Task center task action for pulling migrations/changes data into the current T3 instance.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-interface CommandInterface {
+class PullAction extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractAction {
 
-	public function setArguments(array $arguments);
+	public function checkAccess() {
+		// @TODO: \DreadLabs\Dbmigrate\Backend\User instance!!!
+		return $GLOBALS['BE_USER']->isAdmin();
+	}
 
-	public function execute();
+	public function getOptions() {
+	}
+
+	public function process() {
+	}
 }
 ?>

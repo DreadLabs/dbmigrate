@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Backend;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * User.php
  *
@@ -32,24 +36,62 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Provides access to backend user properties and business logic related information.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
+class User implements \TYPO3\CMS\Core\SingletonInterface {
 
 	protected static $authorTemplate = '%name% <%email%>';
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Configuration
+	 * @var \DreadLabs\Dbmigrate\Configuration
 	 */
 	protected $configuration = NULL;
 
-	public function injectConfiguration(Tx_Dbmigrate_Configuration $configuration) {
+	protected $changeId = NULL;
+
+	public function injectConfiguration(\DreadLabs\Dbmigrate\Configuration $configuration) {
 		$this->configuration = $configuration;
+	}
+
+	public function getUserName() {
+		return $GLOBALS['BE_USER']->user['username'];
+	}
+
+	public function getRealName() {
+		return $GLOBALS['BE_USER']->user['realName'];
+	}
+
+	public function getEmail() {
+		return $GLOBALS['BE_USER']->user['email'];
+	}
+
+	public function setChange($changeId) {
+		$this->setChangeId($changeId);
+
+		$this->setSessionData('dbmigrate:change:id', $this->changeId);
+	}
+
+	public function clearChange() {
+		$this->setChangeId(NULL);
+
+		$this->setSessionData('dbmigrate:change:id', $this->changeId);
+	}
+
+	public function getChangeId() {
+		if (TRUE === is_null($this->changeId)) {
+			$this->changeId = $this->getSessionData('dbmigrate:change:id', NULL);
+		}
+
+		return $this->changeId;
+	}
+
+	public function setChangeId($changeId) {
+		$this->changeId = $changeId;
+	}
+
+	public function hasActiveChange() {
+		$hasChangeId = FALSE === is_null($this->getChangeId());
+
+		return $hasChangeId;
 	}
 
 	public function getSessionData($key, $default) {
@@ -68,55 +110,19 @@ class Tx_Dbmigrate_Backend_User implements t3lib_Singleton {
 		$GLOBALS['BE_USER']->setAndSaveSessionData($key, $value);
 	}
 
-	public function getUserName() {
-		return $GLOBALS['BE_USER']->user['username'];
-	}
-
-	public function getRealName() {
-		return $GLOBALS['BE_USER']->user['realName'];
-	}
-
-	public function getChangeId() {
-		return $this->getSessionData('dbmigrate:change:id', NULL);
-	}
-
-	public function setChangeId($changeId) {
-		$this->setSessionData('dbmigrate:change:id', $changeId);
-	}
-
-	public function getChangeType() {
-		return $this->getSessionData('dbmigrate:change:type', NULL);
-	}
-
-	public function setChangeType($changeType) {
-		$this->setSessionData('dbmigrate:change:type', $changeType);
-	}
-
-	public function setChange($changeType, $changeId) {
-		$this->setChangeType($changeType);
-		$this->setChangeId($changeId);
-	}
-
-	public function hasActiveChange() {
-		$hasChangeId = FALSE === is_null($this->getChangeId());
-		$hasChangeType = FALSE === is_null($this->getChangeType());
-
-		return $hasChangeId && $hasChangeType;
-	}
-
 	public function getAuthorRFC2822Formatted() {
-		$user = $GLOBALS['BE_USER']->user;
+		$name = $this->getUserName();
 
-		$name = $user['username'];
+		$realName = $this->getRealName();
 
-		if ('' !== $user['realName']) {
-			$name = $user['realName'];
+		if ('' !== $realName) {
+			$name = $realName;
 		}
 
-		$email = sprintf('%s@%s', $user['username'], t3lib_div::getIndpEnv('HTTP_HOST'));
+		$email = sprintf('%s@%s', $this->getUserName(), GeneralUtility::getIndpEnv('HTTP_HOST'));
 
-		if ('' !== $user['email']) {
-			$email = $user['email'];
+		if ('' !== $this->getEmail()) {
+			$email = $this->getEmail();
 		}
 
 		$replacePairs = array(

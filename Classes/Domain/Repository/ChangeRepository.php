@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,9 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * ChangeRepository.php
  *
@@ -32,19 +37,13 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Depicts all repository-like logic for the domain model "change".
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
+class ChangeRepository {
 
 	public static $storageLocation = 'Resources/Public/Migrations/';
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Backend_User
+	 * @var \DreadLabs\Dbmigrate\Backend\User
 	 */
 	protected $user = NULL;
 
@@ -54,7 +53,7 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 	 */
 	protected $userChanges = array();
 
-	public function injectUser(Tx_Dbmigrate_Backend_User $user) {
+	public function injectUser(\DreadLabs\Dbmigrate\Backend\User $user) {
 		$this->user = $user;
 	}
 
@@ -87,33 +86,27 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 
 	protected function getActiveChangeStorageLocationOfUser() {
 		if (FALSE === $this->user->hasActiveChange()) {
-			throw new Exception('The user has no active change!', 1364321013);
+			throw new \Exception('The user has no active change!', 1364321013);
 		}
 
-		$replacePairs = array(
-			'%username%' => $this->user->getUserName(),
-			'%changeId%' => $this->user->getChangeId(),
-			'%changeType%' => $this->user->getChangeType(),
-		);
-
-		return $this->getChangeStorageLocation($replacePairs);
+		return $this->getChangeStorageLocation($this->user->getChangeId());
 	}
 
 	protected function raiseExceptionUnlessFileOperationWasSuccessful($fileOperation, $messageTemplate, $filePath) {
 		if (FALSE === $fileOperation) {
 			$msg = sprintf($messageTemplate, $filePath) . ' Please check the file/directory permissions!';
-			throw new Exception($msg, 1364321227);
+			throw new \Exception($msg, 1364321227);
 		}
 	}
 
 	public function findAll() {
-		$filePath = t3lib_extMgm::extPath('dbmigrate', self::$storageLocation);
-		$files = t3lib_div::getFilesInDir($filePath, 'sql', FALSE);
+		$filePath = ExtensionManagementUtility::extPath('dbmigrate', self::$storageLocation);
+		$files = GeneralUtility::getFilesInDir($filePath, 'sql', FALSE);
 
 		$changes = array();
 
 		foreach ($files as $file) {
-			$change = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Model_Change');
+			$change = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Model\\Change');
 
 			$change->setName($file);
 			$change->setStorageLocation($filePath . $file);
@@ -149,45 +142,38 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 	}
 
 	public function findNextFreeChangeOfUser() {
-		$replacePairs = array(
-			'%username%' => $this->user->getUserName(),
-		);
-
 		$i = 0;
 
 		do {
-			$changeId = sprintf(Tx_Dbmigrate_Domain_Model_Change::$idFormat, $i);
+			$changeId = sprintf(\DreadLabs\Dbmigrate\Domain\Model\Change::$idFormat, $i);
 
-			$replacePairs['%changeId%'] = $changeId;
-			$replacePairs['%changeType%'] = 'Command';
-
-			$filePathCommand = $this->getChangeStorageLocation($replacePairs);
-
-			$replacePairs['%changeType%'] = 'Data';
-
-			$filePathData = $this->getChangeStorageLocation($replacePairs);
+			$filePath = $this->getChangeStorageLocation($changeId);
 
 			$i++;
-		} while(file_exists($filePathCommand) || file_exists($filePathData));
+		} while(file_exists($filePath));
 
 		return $changeId;
 	}
 
-	protected function getChangeStorageLocation($replacePairs) {
-		$replacePairs['%date%'] = date('Ymd');
+	protected function getChangeStorageLocation($changeId) {
+		$replacePairs = array(
+			'%date%' => date('Ymd'),
+			'%username%' => $this->user->getUserName(),
+			'%changeId%' => $changeId,
+		);
 
-		$filePath = strtr(Tx_Dbmigrate_Domain_Model_Change::$nameFormat, $replacePairs);
+		$filePath = strtr(\DreadLabs\Dbmigrate\Domain\Model\Change::$nameFormat, $replacePairs);
 
-		return t3lib_extMgm::extPath('dbmigrate', self::$storageLocation . $filePath);
+		return ExtensionManagementUtility::extPath('dbmigrate', self::$storageLocation . $filePath);
 	}
 
 	public function findOneByName($name) {
 		$change = NULL;
 
-		$filePath = t3lib_extMgm::extPath('dbmigrate', self::$storageLocation . $name);
+		$filePath = ExtensionManagementUtility::extPath('dbmigrate', self::$storageLocation . $name);
 
 		if (TRUE === file_exists($filePath)) {
-			$change = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Model_Change');
+			$change = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Model\\Change');
 
 			$change->setName($name);
 			$change->setStorageLocation($filePath);
@@ -199,16 +185,16 @@ class Tx_Dbmigrate_Domain_Repository_ChangeRepository {
 	public function removeOneByName($name) {
 		$change = $this->findOneByName($name);
 
-		if (FALSE === $change instanceof Tx_Dbmigrate_Domain_Model_Change) {
+		if (FALSE === $change instanceof \DreadLabs\Dbmigrate\Domain\Model\Change) {
 			$msg = sprintf('The selected change %s could not be found!', $name);
-			throw new Exception($msg, 1364381331);
+			throw new \Exception($msg, 1364381331);
 		}
 
 		@unlink($change->getStorageLocation());
 
 		if (TRUE === file_exists($changePath)) {
 			$msg = sprintf('Failure during removing a committed change %s. Please check directory permissions!', $name);
-			throw new Exception($msg, 1364381244);
+			throw new \Exception($msg, 1364381244);
 		}
 	}
 }

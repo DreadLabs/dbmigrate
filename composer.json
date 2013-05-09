@@ -1,0 +1,12 @@
+{
+	"name": "ext:dbmigrate",
+	"type": "typo3-extension",
+	"description": "A TYPO3 database migration tool",
+	"authors": [{
+		"name": "Thomas Juhnke",
+		"email": "tommy@van-tomas.de"
+	}],
+	"require": {
+		"jdorn/sql-formatter": "1.2.*"
+	}
+}

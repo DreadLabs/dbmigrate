@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Database;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,42 +27,38 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * TceMainTransactionHandler.php
  *
- * t3lib_TCEmain transaction handler which flags change management settings for the backend user.
+ * \TYPO3\CMS\Core\DataHandling\DataHandler transaction handler which flags change management settings for the backend user.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * t3lib_TCEmain transaction handler which flags change management settings for the backend user
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton {
+class TceMainTransactionHandler implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Configuration
+	 * @var \DreadLabs\Dbmigrate\Configuration
 	 */
 	protected $configuration = NULL;
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Backend_User
+	 * @var \DreadLabs\Dbmigrate\Backend\User
 	 */
 	protected $user = NULL;
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Domain_Repository_ChangeRepository
+	 * @var \DreadLabs\Dbmigrate\Domain\Repository\ChangeRepository
 	 */
 	protected $changeRepository = NULL;
 
 	/**
 	 *
-	 * @var t3lib_db
+	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
 	 */
 	protected $db = NULL;
 
@@ -75,16 +73,16 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	}
 
 	public function initializeConfiguration() {
-		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+		$this->configuration = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Configuration');
 	}
 
 	public function initializeUser() {
-		$this->user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		$this->user = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Backend\\User');
 		$this->user->injectConfiguration($this->configuration);
 	}
 
 	public function initializeChangeRepository() {
-		$this->changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$this->changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Repository\\ChangeRepository');
 		$this->changeRepository->injectUser($this->user);
 	}
 
@@ -95,15 +93,14 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	/**
 	 * process_cmdmap entry point hook method
 	 *
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
 	 */
-	public function processCmdmap_beforeStart(t3lib_TCEmain $tceMain) {
+	public function processCmdmap_beforeStart(\TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
 		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$userName = $this->user->getUserName();
 			$changeId = $this->changeRepository->findNextFreeChangeOfUser();
-			$this->user->setChange('Command', $changeId);
+			$this->user->setChange($changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -112,13 +109,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	/**
 	 * process_cmdmap exit point hook method
 	 *
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
 	 */
-	public function processCmdmap_afterFinish(t3lib_TCEmain $tceMain) {
+	public function processCmdmap_afterFinish(\TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
 		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChange(NULL, NULL);
+			$this->user->setChange(NULL);
 
 			$this->db->store_lastBuiltQuery = FALSE;
 		}
@@ -127,15 +124,14 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	/**
 	 * process_datamap entry point hook method
 	 *
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
 	 */
-	public function processDatamap_beforeStart(t3lib_TCEmain $tceMain) {
+	public function processDatamap_beforeStart(\TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
 		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$userName = $this->user->getUserName();
 			$changeId = $this->changeRepository->findNextFreeChangeOfUser();
-			$this->user->setChange('Data', $changeId);
+			$this->user->setChange($changeId);
 
 			$this->db->store_lastBuiltQuery = TRUE;
 		}
@@ -144,13 +140,13 @@ class Tx_Dbmigrate_Database_TceMainTransactionHandler implements t3lib_Singleton
 	/**
 	 * process_datamap exit point hook method
 	 *
-	 * @param t3lib_TCEmain $tceMain
+	 * @param \TYPO3\CMS\Core\DataHandling\DataHandler $tceMain
 	 */
-	public function processDatamap_afterAllOperations(t3lib_TCEmain $tceMain) {
+	public function processDatamap_afterAllOperations(\TYPO3\CMS\Core\DataHandling\DataHandler $tceMain) {
 		$this->initialize();
 
 		if ($this->configuration->isMonitoringEnabled()) {
-			$this->user->setChange(NULL, NULL);
+			$this->user->setChange(NULL);
 
 			$this->db->store_lastBuiltQuery = FALSE;
 		}

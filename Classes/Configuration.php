@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,13 +34,7 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Provides an interface to application wide configuration concerns.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
+class Configuration implements \TYPO3\CMS\Core\SingletonInterface {
 
 	protected static $defaultTables = array(
 		'backend_layout',
@@ -76,12 +72,29 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 
 	protected $configuration = array();
 
+	/**
+	 * This flag allows to override the monitoringEnabled flag from the configuration.
+	 *
+	 * This is necessary as some deep TYPO3 things push data into the be_users.uc field
+	 * (especially the t3lib_BEfunc::setUpdateSignal() method) which we use for our
+	 * commit wizard but this change doesn't need to be monitored by ext:dbmigrate.
+	 *
+	 * @var boolean
+	 */
+	protected $monitoringEnabledOverride = NULL;
+
 	public function __construct() {
 		$this->configuration = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['dbmigrate'];
 	}
 
 	public function isMonitoringEnabled() {
-		return (bool) $this->configuration['monitoringEnabled'];
+		$isMonitoringEnabled = $this->configuration['monitoringEnabled'];
+
+		if (FALSE === is_null($this->monitoringEnabledOverride)) {
+			$isMonitoringEnabled = $this->monitoringEnabledOverride;
+		}
+
+		return (bool) $isMonitoringEnabled;
 	}
 
 	public function isTableExisting($tableName) {
@@ -93,6 +106,29 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 		$isTableActive = $this->configuration['monitoringTables'][$tableName]['active'];
 
 		return $isTableExisting && $isTableActive;
+	}
+
+	public function getTableBlacklist($tableName) {
+		$blacklist = array();
+
+		if ($this->hasTableBlacklist($tableName)) {
+			$blacklist = $this->configuration['monitoringTables'][$tableName]['blacklist'];
+		}
+
+		return $blacklist;
+	}
+
+	public function hasTableBlacklist($tableName) {
+		$hasTableBlacklist = FALSE;
+
+		if ($this->isTableExisting($tableName)) {
+			$isBlacklistSet = isset($this->configuration['monitoringTables'][$tableName]['blacklist']);
+			$isBlacklistArray = TRUE === is_array($this->configuration['monitoringTables'][$tableName]['blacklist']);
+
+			$hasTableBlacklist = $isBlacklistSet && $isBlacklistArray;
+		}
+
+		return $hasTableBlacklist;
 	}
 
 	public function getDefaultTables() {
@@ -126,6 +162,10 @@ class Tx_Dbmigrate_Configuration implements t3lib_Singleton {
 		$name = preg_replace($cleanupPattern, '', $sitename);
 
 		return strtolower($name);
+	}
+
+	public function setMonitoringEnabledOverride($monitoringEnabled) {
+		$this->monitoringEnabledOverride = $monitoringEnabled;
 	}
 }
 ?>

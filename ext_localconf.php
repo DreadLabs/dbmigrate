@@ -1,18 +1,18 @@
 <?php
 if (!defined ('TYPO3_MODE')) die ('Access denied.');
 
-Tx_Dbmigrate_Utility_ExtensionManagement::loadConfiguration();
+\DreadLabs\Dbmigrate\Utility\ExtensionManagement::loadConfiguration();
 
 if (TYPO3_MODE == 'BE') {
-	Tx_Dbmigrate_Utility_ExtensionManagement::addAjaxControllers();
+	\DreadLabs\Dbmigrate\Utility\ExtensionManagement::addAjaxControllers();
 
-	Tx_Dbmigrate_Utility_ExtensionManagement::addToolbarItem($_EXTKEY);
+	\DreadLabs\Dbmigrate\Utility\ExtensionManagement::addToolbarItem($_EXTKEY);
 
-	Tx_Dbmigrate_Utility_ExtensionManagement::addTCEMainHooks($_EXTKEY);
+	//\DreadLabs\Dbmigrate\Utility\ExtensionManagement::addTCEMainHooks($_EXTKEY);
 
-	Tx_Dbmigrate_Utility_ExtensionManagement::addQueryProcessors();
+	\DreadLabs\Dbmigrate\Utility\ExtensionManagement::addQueryProcessors();
 
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['taskcenter']['sys_action']['Tx_Dbmigrate_Task_RepositoryManager'] = array(
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['taskcenter']['sys_action']['DreadLabs\\Dbmigrate\\Task\\RepositoryManager'] = array(
 		'title' => 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml:task.title',
 		'description' => 'Provides repository maintenance tasks which should be used as a back log by editors.',
 		'icon' => 'EXT:dbmigrate/Resources/Public/Images/database.png'

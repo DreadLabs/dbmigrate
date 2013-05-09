@@ -1,5 +1,5 @@
 <?php
-namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Command\Git;
 
 /***************************************************************
  *  Copyright notice
@@ -28,16 +28,16 @@ namespace DreadLabs\Dbmigrate\Task\RepositoryManager;
  ***************************************************************/
 
 /**
- * CommandInterface.php
+ * CloneCommand.php
  *
- * Interface for all command implementations.
+ * Encapsulates the clone command.
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-interface CommandInterface {
+class CloneCommand extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractCommand {
 
-	public function setArguments(array $arguments);
+	protected $commandTemplate = 'git clone %repository% %targetPath% 2>&1';
 
-	public function execute();
+	protected $errorPreface = 'Cloning the repository failed. Please see the following output for further details:';
 }
 ?>

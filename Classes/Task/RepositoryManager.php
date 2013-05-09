@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * RepositoryManager.php
  *
@@ -32,13 +36,7 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-/**
- * Gateway to all task center actions for migration/change data handling.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
+class RepositoryManager implements \TYPO3\CMS\Taskcenter\TaskInterface {
 
 	protected static $translationCatalogue = 'LLL:EXT:dbmigrate/Resources/Private/Language/Backend.xml';
 
@@ -56,7 +54,7 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Configuration
+	 * @var \DreadLabs\Dbmigrate\Configuration
 	 */
 	protected $configuration = NULL;
 
@@ -64,12 +62,14 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 
 	/**
 	 *
-	 * @var Tx_Dbmigrate_Task_RepositoryManager_Action_ActionInterface
+	 * @var \DreadLabs\Dbmigrate\Task\RepositoryManager\Action\ActionInterface
 	 */
 	protected $action = NULL;
 
-	public function __construct(SC_mod_user_task_index $taskObject) {
+	public function __construct(\TYPO3\CMS\Taskcenter\Controller\TaskModuleController $taskObject) {
 		$this->taskObject = $taskObject;
+
+		$this->taskObject->doc->getPageRenderer()->addJsFile('../typo3conf/ext/dbmigrate/Resources/Public/Javascript/tx_dbmigrate_task.js');
 
 		$this->initialize();
 	}
@@ -81,18 +81,20 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 	}
 
 	protected function initializeConfiguration() {
-		$this->configuration = t3lib_div::makeInstance('Tx_Dbmigrate_Configuration');
+		$this->configuration = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Configuration');
 	}
 
 	protected function getActions() {
-		$actions = t3lib_div::getFilesInDir(dirname(__FILE__) . self::$actionPath, 'php', FALSE, 1, '');
+		$actions = GeneralUtility::getFilesInDir(dirname(__FILE__) . self::$actionPath, 'php', FALSE, 1, '');
 
 		foreach ($actions as $action) {
 			$actionName = str_replace('.php', '', $action);
-			$actionNameNormalized = strtolower($actionName);
-			$isSelectedAction = $actionNameNormalized === t3lib_div::_GP('select');
+			$actionNameCleaned = strtolower($actionName);
+			$actionNameNormalized = str_replace('action', '', $actionNameCleaned);
 
-			$_action = t3lib_div::makeInstance(__CLASS__ . '_Action_' . $actionName);
+			$isSelectedAction = $actionNameCleaned === GeneralUtility::_GP('select');
+
+			$_action = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Task\\RepositoryManager\\Action\\' . $actionName);
 
 			if (FALSE === $_action->checkAccess()) {
 				continue;
@@ -104,7 +106,7 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 // 				$this->action->initialize();
 			}
 
-			$url = 'mod.php?M=user_task&SET[function]=sys_action.' . __CLASS__ . '&select=' . $actionNameNormalized;
+			$url = 'mod.php?M=user_task&SET[function]=sys_action.' . __CLASS__ . '&select=' . $actionNameCleaned;
 
 			$this->actions[] = array(
 				'%url%' => $url,
@@ -146,12 +148,12 @@ class Tx_Dbmigrate_Task_RepositoryManager implements tx_taskcenter_Task {
 	public function getTask() {
 		$content = '<br />';
 
-		if (NULL !== t3lib_div::_GP('select') && NULL === t3lib_div::_GP('submit')) {
+		if (NULL !== GeneralUtility::_GP('select') && NULL === GeneralUtility::_GP('submit')) {
 			$content .= $this->getTaskHeader('task.header.configure');
 			$content .= $this->action->renderForm();
 		}
 
-		if (NULL !== t3lib_div::_GP('submit')) {
+		if (NULL !== GeneralUtility::_GP('submit')) {
 			$content .= $this->getTaskHeader('task.header.processing');
 			$content .= $this->action->process();
 		}

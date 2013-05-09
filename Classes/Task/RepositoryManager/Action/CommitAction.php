@@ -1,4 +1,6 @@
 <?php
+namespace DreadLabs\Dbmigrate\Task\RepositoryManager\Action;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,10 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use \DreadLabs\Dbmigrate\Domain\Repository\ChangeRepository;
+
 /**
  * Commit.php
  *
@@ -32,15 +38,7 @@
  *
  * @author Thomas Juhnke <tommy@van-tomas.de>
  */
-
-require_once t3lib_extMgm::extPath('dbmigrate', 'Classes/Task/RepositoryManager/AbstractAction.php');
-
-/**
- * Task center task action for committing migrations/changes into a data repository.
- *
- * @author Thomas Juhnke <tommy@van-tomas.de>
- */
-class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Task_RepositoryManager_AbstractAction {
+class CommitAction extends \DreadLabs\Dbmigrate\Task\RepositoryManager\AbstractAction {
 
 	protected static $changeOptionTemplate = '<option value="%changeName%">%changeName%</option>';
 
@@ -49,7 +47,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	public function getOptions() {
-		$user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		$user = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Backend\\User');
 
 		$this->options[] = array(
 			'label' => $this->getTranslation('task.action.commit.field.author.label'),
@@ -75,7 +73,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	public function getChanges() {
 		$options = array();
 
-		$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Repository\\ChangeRepository');
 		$changes = $changeRepository->findAll();
 
 		foreach ($changes as $change) {
@@ -96,7 +94,7 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 			$content .= $this->updateGitIgnore();
 
 			$content .= $this->deleteCommittedChanges();
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$content .= $e->getMessage();
 		}
 
@@ -104,14 +102,14 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	protected function commit() {
-		$user = t3lib_div::makeInstance('Tx_Dbmigrate_Backend_User');
+		$user = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Backend\\User');
 
-		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_Commit');
+		$command = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Task\\RepositoryManager\\Command\\Git\\CommitCommand');
 		$command->setArguments(array(
-			'%changesPath%' => t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation),
-			'%commitMessage%' => escapeshellarg(t3lib_div::_GP('subject') . LF . LF . t3lib_div::_GP('description')),
+			'%changesPath%' => ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation),
+			'%commitMessage%' => escapeshellarg(GeneralUtility::_GP('subject') . LF . LF . GeneralUtility::_GP('description')),
 			'%author%' => escapeshellarg($user->getAuthorRFC2822Formatted()),
-			'%changes%' => escapeshellcmd(implode(' ', t3lib_div::_GP('change'))),
+			'%changes%' => escapeshellcmd(implode(' ', GeneralUtility::_GP('change'))),
 		));
 		$command->execute();
 
@@ -119,13 +117,13 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	protected function updateGitIgnore() {
-		$ignoreFilePath = t3lib_extMgm::extPath('dbmigrate', Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation . '.gitignore');
+		$ignoreFilePath = ExtensionManagementUtility::extPath('dbmigrate', ChangeRepository::$storageLocation . '.gitignore');
 
 		$fh = @fopen($ignoreFilePath, 'a');
 
 		$this->raiseExceptionIf(FALSE === $fh, 'The .gitignore file couldn\'t be openend for writing.');
 
-		$changes = t3lib_div::_GP('change');
+		$changes = GeneralUtility::_GP('change');
 
 		foreach ($changes as $change) {
 			@fwrite($fh, $change . LF);
@@ -137,18 +135,18 @@ class Tx_Dbmigrate_Task_RepositoryManager_Action_Commit extends Tx_Dbmigrate_Tas
 	}
 
 	protected function deleteCommittedChanges() {
-		$changeRepository = t3lib_div::makeInstance('Tx_Dbmigrate_Domain_Repository_ChangeRepository');
+		$changeRepository = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Domain\\Repository\\ChangeRepository');
 
-		$changes = t3lib_div::_GP('change');
+		$changes = GeneralUtility::_GP('change');
 
 		foreach ($changes as $change) {
 			$changeRepository->removeOneByName($change);
 		}
 
-		$command = t3lib_div::makeInstance('Tx_Dbmigrate_Task_RepositoryManager_Command_Git_UpdateIndex');
+		$command = GeneralUtility::makeInstance('DreadLabs\\Dbmigrate\\Task\\RepositoryManager\\Command\\Git\\UpdateIndexCommand');
 		$command->setArguments(array(
-			'%changesPath%' => Tx_Dbmigrate_Domain_Repository_ChangeRepository::$storageLocation,
-			'%changes%' => implode(' ', t3lib_div::_GP('change')),
+			'%changesPath%' => ChangeRepository::$storageLocation,
+			'%changes%' => implode(' ', GeneralUtility::_GP('change')),
 		));
 		$command->execute();
 
